@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "collate_fn_error",
+  "expected_summary_keywords": [
+    "collate"
+  ],
+  "expected_root_cause_keywords": [
+    "batch",
+    "structure"
+  ],
+  "expected_repair_action_keywords": [
+    "collate",
+    "batch"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "total_tasks": 10,
+  "mode": "diagnosis",
+  "diagnosis_pass_count": 10,
+  "patch_plan_count": 8,
+  "patch_applied_count": 0,
+  "verification_success_count": 0,
+  "total_score": 0.0,
+  "average_score": 0.0,
+  "scored_task_count": 0,
+  "env_repair_plan_count": 0,
+  "patch_review_count": 0,
+  "patch_review_blocked_count": 0
+}

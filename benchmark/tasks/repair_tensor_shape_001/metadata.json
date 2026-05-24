@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_tensor_shape_001",
+  "task_name": "Diagnose tensor shape mismatch in a minimal PyTorch training script",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": ["torch"]
+}

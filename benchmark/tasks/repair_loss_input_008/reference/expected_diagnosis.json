@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "loss_input_error",
+  "expected_summary_keywords": [
+    "loss input"
+  ],
+  "expected_root_cause_keywords": [
+    "loss",
+    "target"
+  ],
+  "expected_repair_action_keywords": [
+    "target",
+    "class"
+  ]
+}

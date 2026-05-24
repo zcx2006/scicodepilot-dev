@@ -1,0 +1,13 @@
+{
+  "expected_error_type": "dtype_mismatch",
+  "expected_summary_keywords": [
+    "incompatible data types"
+  ],
+  "expected_root_cause_keywords": [
+    "incompatible dtypes"
+  ],
+  "expected_repair_action_keywords": [
+    "dtype",
+    "compatible"
+  ]
+}

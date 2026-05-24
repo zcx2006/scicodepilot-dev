@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "missing_file",
+  "expected_summary_keywords": [
+    "required file"
+  ],
+  "expected_root_cause_keywords": [
+    "file path",
+    "missing"
+  ],
+  "expected_repair_action_keywords": [
+    "verify",
+    "path"
+  ]
+}

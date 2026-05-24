@@ -1,0 +1,12 @@
+{
+  "expected_error_type": "device_mismatch",
+  "expected_summary_keywords": [
+    "incompatible devices"
+  ],
+  "expected_root_cause_keywords": [
+    "different devices"
+  ],
+  "expected_repair_action_keywords": [
+    "same target device"
+  ]
+}

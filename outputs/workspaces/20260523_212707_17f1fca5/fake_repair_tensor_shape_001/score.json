@@ -1,0 +1,12 @@
+{
+  "task_id": "fake_repair_tensor_shape_001",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "/home/zengl/miniconda3/envs/scicodepilot-dev/bin/python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260523_212707_17f1fca5/fake_repair_tensor_shape_001/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

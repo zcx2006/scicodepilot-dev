@@ -1,0 +1,12 @@
+{
+  "task_id": "repair_dtype_mismatch_002",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260520_155836_679965be/repair_dtype_mismatch_002/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

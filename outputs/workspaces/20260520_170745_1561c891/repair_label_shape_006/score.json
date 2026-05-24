@@ -1,0 +1,12 @@
+{
+  "task_id": "repair_label_shape_006",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260520_170745_1561c891/repair_label_shape_006/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

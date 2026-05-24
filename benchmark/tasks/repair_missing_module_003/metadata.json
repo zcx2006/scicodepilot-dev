@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_missing_module_003",
+  "task_name": "Diagnose missing Python module in a minimal script",
+  "category": "environment_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}

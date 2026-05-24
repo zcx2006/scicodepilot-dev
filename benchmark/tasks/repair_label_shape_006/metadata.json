@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_label_shape_006",
+  "task_name": "Repair label batch shape mismatch in a minimal PyTorch script",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": ["torch"]
+}

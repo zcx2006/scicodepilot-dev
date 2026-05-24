@@ -1,0 +1,1 @@
+{"task_id": "repair_missing_module_003", "mode": "diagnosis", "command_success": false, "parsed_error_type": "missing_module", "diagnosis_passed": true, "patch_plan_generated": false, "patch_applied": null, "verification_success": null, "verification_return_code": null, "message": "Diagnosis passed."}

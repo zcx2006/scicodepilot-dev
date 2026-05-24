@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_collate_fn_009",
+  "task_name": "Repair DataLoader collate_fn batch structure mismatch",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}

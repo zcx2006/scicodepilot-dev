@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_entrypoint_error_005",
+  "task_name": "Repair misspelled Python entrypoint call",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}

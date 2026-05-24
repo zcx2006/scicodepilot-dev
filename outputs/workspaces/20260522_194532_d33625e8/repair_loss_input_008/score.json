@@ -1,0 +1,12 @@
+{
+  "task_id": "repair_loss_input_008",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260522_194532_d33625e8/repair_loss_input_008/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

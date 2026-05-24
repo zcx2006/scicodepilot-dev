@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_device_mismatch_007",
+  "task_name": "Repair device mismatch in a minimal tensor workflow",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}

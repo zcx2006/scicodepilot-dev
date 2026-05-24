@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "entrypoint_error",
+  "expected_summary_keywords": [
+    "entrypoint"
+  ],
+  "expected_root_cause_keywords": [
+    "entrypoint",
+    "misspelled"
+  ],
+  "expected_repair_action_keywords": [
+    "mainn",
+    "main"
+  ]
+}

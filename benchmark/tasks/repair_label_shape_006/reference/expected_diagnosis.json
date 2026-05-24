@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "label_shape",
+  "expected_summary_keywords": [
+    "label batch shape"
+  ],
+  "expected_root_cause_keywords": [
+    "label",
+    "batch size"
+  ],
+  "expected_repair_action_keywords": [
+    "align",
+    "batch size"
+  ]
+}

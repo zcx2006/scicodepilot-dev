@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "tensor_shape",
+  "expected_summary_keywords": [
+    "tensor shape mismatch"
+  ],
+  "expected_root_cause_keywords": [
+    "feature dimension",
+    "downstream layer"
+  ],
+  "expected_repair_action_keywords": [
+    "inspect",
+    "align"
+  ]
+}

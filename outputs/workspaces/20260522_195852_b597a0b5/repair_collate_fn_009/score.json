@@ -1,0 +1,12 @@
+{
+  "task_id": "repair_collate_fn_009",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260522_195852_b597a0b5/repair_collate_fn_009/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "total_tasks": 6,
+  "mode": "diagnosis",
+  "diagnosis_pass_count": 6,
+  "patch_plan_count": 4,
+  "patch_applied_count": 0,
+  "verification_success_count": 0
+}

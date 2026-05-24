@@ -1,0 +1,13 @@
+{
+  "expected_error_type": "missing_module",
+  "expected_summary_keywords": [
+    "required Python module"
+  ],
+  "expected_root_cause_keywords": [
+    "module required"
+  ],
+  "expected_repair_action_keywords": [
+    "dependency",
+    "environment"
+  ]
+}

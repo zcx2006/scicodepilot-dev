@@ -1,0 +1,14 @@
+{
+  "total_tasks": 6,
+  "mode": "repair",
+  "diagnosis_pass_count": 0,
+  "patch_plan_count": 4,
+  "patch_applied_count": 4,
+  "verification_success_count": 4,
+  "total_score": 4.0,
+  "average_score": 1.0,
+  "scored_task_count": 4,
+  "env_repair_plan_count": 2,
+  "patch_review_count": 4,
+  "patch_review_blocked_count": 0
+}

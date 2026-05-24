@@ -1,0 +1,75 @@
+{
+  "timestamp": "20260522_183104",
+  "output_dir": "/home/zengl/projects/SciCodePilot/outputs/experiments/20260522_183104",
+  "quick": true,
+  "include_mock_llm": false,
+  "include_safety_cases": false,
+  "experiments": [
+    {
+      "name": "diagnosis_suite",
+      "command": "/home/zengl/miniconda3/envs/scicodepilot-dev/bin/python /home/zengl/projects/SciCodePilot/scripts/run_benchmark_suite.py --mode diagnosis",
+      "return_code": 0,
+      "stdout_tail": "\n=== Benchmark Suite Summary ===\nmode: diagnosis\ntotal_tasks: 6\ndiagnosis_pass_count: 6\npatch_plan_count: 4\npatch_review_count: 0\npatch_review_blocked_count: 0\npatch_applied_count: 0\nverification_success_count: 0\nscored_task_count: 0\nenv_repair_plan_count: 0\ntotal_score: 0.0\naverage_score: 0.0\noutput_dir: /home/zengl/projects/SciCodePilot/outputs/benchmark_runs/20260522_183111",
+      "stderr_tail": "",
+      "parsed_summary": {
+        "mode": "diagnosis",
+        "total_tasks": 6,
+        "diagnosis_pass_count": 6,
+        "patch_plan_count": 4,
+        "patch_review_count": 0,
+        "patch_review_blocked_count": 0,
+        "patch_applied_count": 0,
+        "verification_success_count": 0,
+        "scored_task_count": 0,
+        "env_repair_plan_count": 0,
+        "total_score": 0.0,
+        "average_score": 0.0,
+        "output_dir": "/home/zengl/projects/SciCodePilot/outputs/benchmark_runs/20260522_183111"
+      }
+    },
+    {
+      "name": "repair_without_apply",
+      "command": "/home/zengl/miniconda3/envs/scicodepilot-dev/bin/python /home/zengl/projects/SciCodePilot/scripts/run_benchmark_suite.py --mode repair",
+      "return_code": 0,
+      "stdout_tail": "\n=== Benchmark Suite Summary ===\nmode: repair\ntotal_tasks: 6\ndiagnosis_pass_count: 0\npatch_plan_count: 4\npatch_review_count: 4\npatch_review_blocked_count: 0\npatch_applied_count: 0\nverification_success_count: 0\nscored_task_count: 0\nenv_repair_plan_count: 2\ntotal_score: 0.0\naverage_score: 0.0\noutput_dir: /home/zengl/projects/SciCodePilot/outputs/benchmark_runs/20260522_183116",
+      "stderr_tail": "",
+      "parsed_summary": {
+        "mode": "repair",
+        "total_tasks": 6,
+        "diagnosis_pass_count": 0,
+        "patch_plan_count": 4,
+        "patch_review_count": 4,
+        "patch_review_blocked_count": 0,
+        "patch_applied_count": 0,
+        "verification_success_count": 0,
+        "scored_task_count": 0,
+        "env_repair_plan_count": 2,
+        "total_score": 0.0,
+        "average_score": 0.0,
+        "output_dir": "/home/zengl/projects/SciCodePilot/outputs/benchmark_runs/20260522_183116"
+      }
+    },
+    {
+      "name": "repair_with_confirm_apply",
+      "command": "/home/zengl/miniconda3/envs/scicodepilot-dev/bin/python /home/zengl/projects/SciCodePilot/scripts/run_benchmark_suite.py --mode repair --confirm-apply",
+      "return_code": 0,
+      "stdout_tail": "\n=== Benchmark Suite Summary ===\nmode: repair\ntotal_tasks: 6\ndiagnosis_pass_count: 0\npatch_plan_count: 4\npatch_review_count: 4\npatch_review_blocked_count: 0\npatch_applied_count: 4\nverification_success_count: 4\nscored_task_count: 4\nenv_repair_plan_count: 2\ntotal_score: 4.0\naverage_score: 1.0\noutput_dir: /home/zengl/projects/SciCodePilot/outputs/benchmark_runs/20260522_183125",
+      "stderr_tail": "",
+      "parsed_summary": {
+        "mode": "repair",
+        "total_tasks": 6,
+        "diagnosis_pass_count": 0,
+        "patch_plan_count": 4,
+        "patch_review_count": 4,
+        "patch_review_blocked_count": 0,
+        "patch_applied_count": 4,
+        "verification_success_count": 4,
+        "scored_task_count": 4,
+        "env_repair_plan_count": 2,
+        "total_score": 4.0,
+        "average_score": 1.0,
+        "output_dir": "/home/zengl/projects/SciCodePilot/outputs/benchmark_runs/20260522_183125"
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_config_key_010",
+  "task_name": "Repair misspelled experiment configuration key",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}

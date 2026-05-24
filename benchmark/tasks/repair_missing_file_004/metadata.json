@@ -1,0 +1,9 @@
+{
+  "task_id": "repair_missing_file_004",
+  "task_name": "Diagnose missing dataset file in a minimal script",
+  "category": "data_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}

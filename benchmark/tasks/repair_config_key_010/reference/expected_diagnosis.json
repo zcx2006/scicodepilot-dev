@@ -1,0 +1,14 @@
+{
+  "expected_error_type": "config_key_error",
+  "expected_summary_keywords": [
+    "config"
+  ],
+  "expected_root_cause_keywords": [
+    "configuration",
+    "key"
+  ],
+  "expected_repair_action_keywords": [
+    "learning_rate",
+    "key"
+  ]
+}
