@@ -12,6 +12,7 @@ This inventory tracks report-ready assets for the final SciCodePilot report.
 | `report_assets/tables/component_metrics.md` | 6 Experiments | Yes | Optional formatting polish |
 | `report_assets/tables/memory_retrieval_examples.md` | 6.7 Memory Retrieval Evaluation | Yes | Light caption polish |
 | `report_assets/tables/memory_retrieval_eval.md` | 6.7 Memory Retrieval Evaluation | Yes | Optional formatting polish |
+| `report_assets/tables/final_results_summary.md` | Defense summary, 6 Experiments | Yes | Optional caption polish |
 
 ## Figures
 
@@ -19,6 +20,7 @@ This inventory tracks report-ready assets for the final SciCodePilot report.
 | --- | --- | --- | --- |
 | `report_assets/figures/event_flow.md` | 5.1 Event-driven Repair Pipeline | Yes | Optional visual styling |
 | `report_assets/figures/system_pipeline.md` | 5 Method | Yes | Optional visual styling |
+| `report_assets/figures/defense_system_overview.md` | Defense overview, 5 Method | Yes | Optional visual styling |
 
 ## Supporting Docs
 
@@ -35,6 +37,10 @@ This inventory tracks report-ready assets for the final SciCodePilot report.
 | `docs/public_benchmark_plan.md` | 7 Public Benchmark Extension Plan | Yes | Light prose polish |
 | `docs/public_benchmark_adapter.md` | 7 Public Benchmark Extension Plan | Yes | Light prose polish |
 | `outputs/memory_retrieval_eval/<timestamp>/summary.md` | 6.7 Memory Retrieval Evaluation | Generated | Select latest run and polish wording if quoted |
+| `docs/defense_outline.md` | Defense preparation | Yes | Light speaker polish |
+| `docs/final_demo_script.md` | Defense demo | Yes | Adjust timing to presentation slot |
+| `docs/final_claims_checklist.md` | Defense and final report guardrail | Yes | None |
+| `scripts/run_final_defense_demo.py` | Defense demo runner | Yes | None |
 
 ## Notes
 

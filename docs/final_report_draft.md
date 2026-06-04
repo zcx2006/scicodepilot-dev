@@ -68,6 +68,8 @@ Workspace isolation is a practical requirement for repair experiments. It allows
 
 The experiments are organized around the internal controlled benchmark and ablation suite. The goal is to evaluate whether the system components work together under controlled conditions, not to report public benchmark results.
 
+The compact defense-ready result table is available in `report_assets/tables/final_results_summary.md`. A defense-oriented system overview figure is available in `report_assets/figures/defense_system_overview.md`.
+
 ### 6.1 Internal Controlled Benchmark Setup
 
 The benchmark contains 10 controlled tasks. Each task has a known failure mode and a hidden evaluator. Diagnosis mode validates failure detection and structured memory creation. Repair mode validates routing, patch planning, safety review, patch application when confirmed, and verification.
@@ -132,4 +134,4 @@ The mock LLM repair path is not a real LLM evaluation. It only checks that a pla
 
 SciCodePilot demonstrates a structured failure-memory approach to reliable scientific code repair and reproducibility. On the internal 10-task controlled benchmark, the system diagnoses all controlled tasks, routes environment and data failures without unsafe automatic modification, repairs designed source-code failures through the full rule-based configuration, applies patches in isolated workspaces, and records reproducibility assets.
 
-The current contribution is a controlled, auditable repair pipeline and a report-ready evaluation pack. The next step is a carefully scoped public benchmark pilot, reported separately and without overstating the current internal controlled results.
+The current contribution is a controlled, auditable repair pipeline and a report-ready evaluation pack. The final packaged result is a defense-ready backend system with controlled benchmark results, safety and reproducibility assets, an external repo smoke interface, and deterministic `FailureMemory` retrieval evaluation. The next step is a carefully scoped public benchmark pilot, reported separately and without overstating the current internal controlled results.
