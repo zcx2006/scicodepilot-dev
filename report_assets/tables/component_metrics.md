@@ -3,11 +3,13 @@
 These component metrics are for internal controlled benchmark only.
 
 - Source summary: `/home/zengl/projects/SciCodePilot/outputs/ablations/20260522_195640/ablation_summary.json`
+- Main variant: `full_rule_based_repair`
+- Diagnosis metric policy: use `diagnosis_only` when available; otherwise mark as not recorded.
 
 | Metric | Value |
 | --- | --- |
 | total controlled tasks | 10 |
-| diagnosis pass count | 0 |
+| diagnosis pass count | 10/10 |
 | patch plan count | 8 |
 | env repair plan count | 2 |
 | patch review count | 8 |

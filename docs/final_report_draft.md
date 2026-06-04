@@ -106,6 +106,12 @@ M26 adds a lightweight external repo smoke interface for local Python repositori
 
 This interface is a smoke tool, not a public benchmark result. It does not download BugsInPy or SWE-bench, does not run external baselines, and does not apply patches to the original repo. Unsupported external failures are reported as `unsupported_external_failure` with a no-op plan.
 
+### 6.7 Memory Retrieval Evaluation
+
+M28 evaluates whether deterministic `FailureMemory` retrieval can recover relevant internal controlled benchmark memory records. The evaluation reads local JSONL memory records, uses each record as a controlled query, retrieves top-k similar records with embedding-free token matching, and reports self-match, same-error-type, and same-category retrieval metrics.
+
+This is a component-level retrieval sanity check scoped to internal controlled benchmark records. It does not evaluate real LLM repair performance, does not report public benchmark performance, and does not compare against external systems. The current memory data has one record per controlled error type, so exact self retrieval is useful as a reproducibility check while same-error retrieval beyond the identical record remains limited by data size.
+
 ## 7. Public Benchmark Extension Plan
 
 The next evaluation step is a small public benchmark pilot. The recommended priority is a BugsInPy-style pilot first, followed by a small SWE-bench Lite subset, and only later an external baseline comparison. The initial pilot should use 3 to 5 Python tasks with pytest-based validation, short runtimes, and light dependencies.
