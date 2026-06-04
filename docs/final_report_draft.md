@@ -100,6 +100,12 @@ The reproducibility bundle captures the source revision, git status, Python vers
 
 For the current M23A bundle inspection, the manifest was generated successfully and reported no missing files. The bundle supports reproducibility for internal controlled experiments. It does not convert the internal benchmark into a public benchmark evaluation.
 
+### 6.6 External Repo Smoke Interface
+
+M26 adds a lightweight external repo smoke interface for local Python repositories. The interface copies a user-provided repo into an isolated workspace, runs a user-provided command, captures stdout, stderr, and return code, and then produces a diagnosis summary. In repair-plan mode, it can produce an `EnvRepairPlan` for missing module or missing file failures, or a non-applying `PatchPlan` plus `PatchSafetyReviewer` summary for supported source-code failures.
+
+This interface is a smoke tool, not a public benchmark result. It does not download BugsInPy or SWE-bench, does not run external baselines, and does not apply patches to the original repo. Unsupported external failures are reported as `unsupported_external_failure` with a no-op plan.
+
 ## 7. Public Benchmark Extension Plan
 
 The next evaluation step is a small public benchmark pilot. The recommended priority is a BugsInPy-style pilot first, followed by a small SWE-bench Lite subset, and only later an external baseline comparison. The initial pilot should use 3 to 5 Python tasks with pytest-based validation, short runtimes, and light dependencies.

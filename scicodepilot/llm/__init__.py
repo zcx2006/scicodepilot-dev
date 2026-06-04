@@ -8,7 +8,6 @@ from scicodepilot.llm.llm_client import (
     MockLLMClient,
     OpenAILLMClient,
 )
-from scicodepilot.llm.llm_patch_planner import LLMPatchPlanner
 
 __all__ = [
     "DeepSeekLLMClient",
@@ -19,3 +18,11 @@ __all__ = [
     "OpenAILLMClient",
     "LLMPatchPlanner",
 ]
+
+
+def __getattr__(name: str):
+    if name == "LLMPatchPlanner":
+        from scicodepilot.llm.llm_patch_planner import LLMPatchPlanner
+
+        return LLMPatchPlanner
+    raise AttributeError(name)

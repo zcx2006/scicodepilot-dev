@@ -9,6 +9,7 @@ This inventory tracks report-ready assets for the final SciCodePilot report.
 | `report_assets/tables/ablation_table.md` | 6.3 Internal Controlled Ablation | Yes | Light caption polish |
 | `report_assets/tables/safety_table.md` | 6.4 Safety Stress Cases | Yes | Light caption polish |
 | `report_assets/tables/repro_bundle_manifest.md` | 6.5 Reproducibility Bundle | Yes | Optional formatting polish |
+| `report_assets/tables/component_metrics.md` | 6 Experiments | Yes | Optional formatting polish |
 
 ## Figures
 
@@ -27,6 +28,7 @@ This inventory tracks report-ready assets for the final SciCodePilot report.
 | `docs/safety_cases.md` | 6.4 Safety Stress Cases | Yes | Light prose polish |
 | `docs/internal_ablation_v2.md` | 6.3 Internal Controlled Ablation | Yes | Light prose polish |
 | `docs/reproducibility.md` | 6.5 Reproducibility Bundle | Yes | Light prose polish |
+| `docs/external_repo_smoke_test.md` | 6.6 External Repo Smoke Interface | Yes | Light prose polish |
 | `docs/public_benchmark_plan.md` | 7 Public Benchmark Extension Plan | Yes | Light prose polish |
 | `docs/public_benchmark_adapter.md` | 7 Public Benchmark Extension Plan | Yes | Light prose polish |
 
