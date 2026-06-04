@@ -64,17 +64,37 @@ def load_summary(args: argparse.Namespace) -> tuple[dict[str, Any] | None, Path 
     return json.loads(summary_path.read_text(encoding="utf-8")), summary_path
 
 
-def choose_main_metrics(summary: dict[str, Any]) -> dict[str, Any]:
+# def choose_main_metrics(summary: dict[str, Any]) -> dict[str, Any]:
+#     experiments = summary.get("experiments", [])
+#     preferred_names = ("full_rule_based_repair", "diagnosis_only", "repair_without_apply")
+#     for name in preferred_names:
+#         for experiment in experiments:
+#             if experiment.get("name") == name:
+#                 return experiment.get("parsed_summary") or {}
+#     for experiment in experiments:
+#         parsed = experiment.get("parsed_summary") or {}
+#         if parsed:
+#             return parsed
+#     return {}
+
+def choose_main_experiment(summary: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
     experiments = summary.get("experiments", [])
-    preferred_names = ("full_rule_based_repair", "diagnosis_only", "repair_without_apply")
+    preferred_names = ("full_rule_based_repair", "repair_without_apply", "diagnosis_only")
     for name in preferred_names:
         for experiment in experiments:
             if experiment.get("name") == name:
-                return experiment.get("parsed_summary") or {}
+                return name, experiment.get("parsed_summary") or {}
     for experiment in experiments:
         parsed = experiment.get("parsed_summary") or {}
         if parsed:
-            return parsed
+            return experiment.get("name"), parsed
+    return None, {}
+
+
+def find_experiment_metrics(summary: dict[str, Any], name: str) -> dict[str, Any]:
+    for experiment in summary.get("experiments", []):
+        if experiment.get("name") == name:
+            return experiment.get("parsed_summary") or {}
     return {}
 
 
@@ -105,17 +125,36 @@ def build_table(summary: dict[str, Any] | None, summary_path: Path | None) -> st
         )
         return "\n".join(lines) + "\n"
 
-    metrics = choose_main_metrics(summary)
+    main_experiment_name, metrics = choose_main_experiment(summary)
+    diagnosis_metrics = find_experiment_metrics(summary, "diagnosis_only")
+
     lines.extend(
         [
             f"- Source summary: `{summary_path}`",
+            f"- Main variant: `{main_experiment_name}`",
+            "- Diagnosis metric policy: use `diagnosis_only` when available; otherwise mark as not recorded.",
             "",
             "| Metric | Value |",
             "| --- | --- |",
         ]
     )
+
     for key, label in METRIC_LABELS:
-        lines.append(f"| {label} | {metrics.get(key, '-')} |")
+        if key == "diagnosis_pass_count":
+            diagnosis_value = diagnosis_metrics.get("diagnosis_pass_count")
+            diagnosis_total = diagnosis_metrics.get("total_tasks")
+
+            if diagnosis_value is not None and diagnosis_total is not None:
+                value = f"{diagnosis_value}/{diagnosis_total}"
+            elif diagnosis_value is not None:
+                value = diagnosis_value
+            else:
+                value = "not recorded in this variant"
+        else:
+            value = metrics.get(key, "-")
+
+        lines.append(f"| {label} | {value} |")
+
     lines.append(f"| safety stress case pass count | {safety_pass_count(summary)} |")
     return "\n".join(lines) + "\n"
 
