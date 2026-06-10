@@ -1,0 +1,8 @@
+{
+  "task_id": "repair_label_shape_006",
+  "mode": "structured_patchplan",
+  "model": "deepseek-chat",
+  "status": "success",
+  "prompt_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_205013\\repair_label_shape_006\\structured_patchplan\\prompt.txt",
+  "response_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_205013\\repair_label_shape_006\\structured_patchplan\\response.txt"
+}

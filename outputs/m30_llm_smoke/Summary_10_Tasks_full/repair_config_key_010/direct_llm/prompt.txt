@@ -1,0 +1,76 @@
+
+You are evaluating a scientific Python code repair benchmark.
+
+Task ID: repair_config_key_010
+
+Read the task files and provide:
+1. likely error type
+2. root cause
+3. repair suggestion
+4. verification idea
+
+Return concise plain text.
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_config_key_010",
+  "task_name": "Repair misspelled experiment configuration key",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "config_key_error",
+  "expected_summary_keywords": [
+    "config"
+  ],
+  "expected_root_cause_keywords": [
+    "configuration",
+    "key"
+  ],
+  "expected_repair_action_keywords": [
+    "learning_rate",
+    "key"
+  ]
+}
+
+
+# FILE: repo\train.py
+import sys
+
+
+def main() -> None:
+    print("Loading experiment configuration...", flush=True)
+    config = {"learning_rate": 0.001, "epochs": 2}
+
+    try:
+        learning_rate = config["learningrate"]
+    except KeyError as exc:
+        print(
+            f"KeyError: config_key_error: missing experiment config key {exc!s}",
+            file=sys.stderr,
+            flush=True,
+        )
+        sys.exit(1)
+
+    print(f"Config verified with learning_rate={learning_rate}.", flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# Repair Config Key Error
+
+The script reads a misspelled experiment config key. Repair the source code so
+it uses the existing `learning_rate` key.
+

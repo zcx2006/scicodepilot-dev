@@ -1,0 +1,13 @@
+{
+  "task_id": "repair_config_key_010",
+  "error_type": "config_key_error",
+  "root_cause_hypothesis": "The code attempts to access config['learningrate'] which is a misspelled key; the correct key is 'learning_rate'.",
+  "repair_action": "Correct the key name from 'learningrate' to 'learning_rate' in the dictionary access.",
+  "patch_plan_steps": [
+    "Open repo/train.py.",
+    "In line 8, change config['learningrate'] to config['learning_rate']."
+  ],
+  "safety_risks": [],
+  "verification_command": "python train.py",
+  "memory_usage": "Similar failures often require matching the error type, root cause, repair action, and verification command."
+}

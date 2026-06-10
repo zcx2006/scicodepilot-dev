@@ -1,0 +1,16 @@
+{
+  "task_id": "repair_config_key_010",
+  "error_type": "config_key_error",
+  "root_cause_hypothesis": "The code attempts to access a configuration key 'learningrate' which does not exist; the correct key is 'learning_rate'.",
+  "repair_action": "Change the key in the dictionary access from 'learningrate' to 'learning_rate'.",
+  "patch_plan_steps": [
+    "Open repo/train.py.",
+    "Locate line 8: learning_rate = config[\"learningrate\"].",
+    "Replace 'learningrate' with 'learning_rate'.",
+    "Save the file."
+  ],
+  "safety_risks": [
+    "No risks; the change is a simple key correction that does not affect other parts of the code."
+  ],
+  "verification_command": "python train.py"
+}

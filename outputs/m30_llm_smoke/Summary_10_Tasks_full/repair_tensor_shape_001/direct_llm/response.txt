@@ -1,0 +1,4 @@
+likely error type: tensor shape mismatch
+root cause: The classifier's linear layer expects input features of dimension 128, but the upstream tensor has only 64 features.
+repair suggestion: Inspect the feature dimensions and align them, e.g., change classifier_expected_dim to 64 or adjust the upstream tensor to have 128 features.
+verification idea: Run the script after aligning dimensions; it should execute without error and produce logits of shape (32, 10).

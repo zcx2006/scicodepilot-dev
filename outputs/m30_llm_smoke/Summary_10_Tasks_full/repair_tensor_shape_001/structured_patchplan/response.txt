@@ -1,0 +1,16 @@
+{
+  "task_id": "repair_tensor_shape_001",
+  "error_type": "tensor_shape",
+  "root_cause_hypothesis": "The classifier layer expects 128 input features, but the upstream tensor has only 64 features, causing a shape mismatch.",
+  "repair_action": "Inspect the feature dimensions and align the upstream tensor's feature dimension with the classifier's expected input size.",
+  "patch_plan_steps": [
+    "Run the script to confirm the RuntimeError due to shape mismatch.",
+    "Identify the upstream feature dimension (64) and the classifier's expected input dimension (128).",
+    "Modify the upstream tensor or the classifier to have matching feature dimensions (e.g., change classifier_expected_dim to 64 or adjust the tensor to 128)."
+  ],
+  "safety_risks": [
+    "Changing dimensions may affect downstream layers or model compatibility.",
+    "Ensure that any dimension change is consistent with the rest of the model architecture."
+  ],
+  "verification_command": "python train.py"
+}

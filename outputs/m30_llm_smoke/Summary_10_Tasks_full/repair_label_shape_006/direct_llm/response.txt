@@ -1,0 +1,4 @@
+likely error type: label_shape
+root cause: labels tensor has batch size (batch_size + 1) = 9, while logits have batch size 8, causing a shape mismatch in CrossEntropyLoss.
+repair suggestion: Change the labels creation to use batch_size instead of batch_size + 1, i.e., labels = torch.randint(0, num_classes, (batch_size,), device=device).
+verification idea: Run the script after the fix; it should print the loss value without raising a RuntimeError about shape mismatch.

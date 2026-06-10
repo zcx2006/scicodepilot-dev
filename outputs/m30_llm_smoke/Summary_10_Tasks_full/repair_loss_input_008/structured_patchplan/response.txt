@@ -1,0 +1,18 @@
+```json
+{
+  "task_id": "repair_loss_input_008",
+  "error_type": "loss_input_error",
+  "root_cause_hypothesis": "The variable `target_kind` is set to 'probabilities' instead of 'class_indices', causing CrossEntropyLoss to receive probability-like targets instead of class index targets.",
+  "repair_action": "Change the value of `target_kind` from 'probabilities' to 'class_indices' so that the loss function receives the correct target format.",
+  "patch_plan_steps": [
+    "Open repo/train.py.",
+    "Locate line 6: `target_kind = \"probabilities\"`.",
+    "Replace `\"probabilities\"` with `\"class_indices\"`.",
+    "Save the file."
+  ],
+  "safety_risks": [
+    "No risks; the change only corrects a string literal to match the expected target type."
+  ],
+  "verification_command": "python train.py"
+}
+```

@@ -1,0 +1,4 @@
+likely error type: entrypoint_error
+root cause: The script defines a function `main()` but the entrypoint call under `if __name__ == "__main__":` misspells it as `mainn()`, causing a NameError.
+repair suggestion: Change `mainn()` to `main()` in the `if __name__ == "__main__":` block.
+verification idea: Run `python train.py` and confirm it prints "Entrypoint executed successfully." without errors.

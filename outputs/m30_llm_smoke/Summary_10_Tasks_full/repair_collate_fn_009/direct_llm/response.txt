@@ -1,0 +1,4 @@
+likely error type: collate_fn_error  
+root cause: The collate function returns a batch dictionary with keys "features" and "labels", but the training loop expects keys "x" and "y".  
+repair suggestion: Change the collate function to return `{"x": xs, "y": ys}` instead of `{"features": xs, "labels": ys}`.  
+verification idea: Run the script and confirm it prints "Batch structure verified." without exiting with a KeyError.
