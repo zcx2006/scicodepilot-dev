@@ -1,0 +1,27 @@
+{
+  "mode": "diagnosis",
+  "repo_path": "D:\\Git\\My_Git_Project\\LocalSmokeCases\\case_assertion_failure",
+  "output_dir": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_180901",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_180901\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "command": {
+    "command": "python test_case.py",
+    "return_code": 0,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  "parsed_error": {
+    "error_type": "no_failure",
+    "summary": "Command completed successfully; no failure diagnosis was needed.",
+    "evidence": []
+  },
+  "failure_memory": {
+    "error_type": "no_failure",
+    "evidence": [],
+    "root_cause_hypothesis": "The command failed, but the current rule-based memory builder has no specialized hypothesis for this error type.",
+    "repair_action": "Inspect the stderr evidence manually and extend the failure-memory rules if this error type should be supported."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison."
+}
