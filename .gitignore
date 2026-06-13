@@ -1,5 +1,7 @@
-
-# Python cache
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.venv/
+venv/
+outputs/workspaces/
+outputs/frontend_logs/
