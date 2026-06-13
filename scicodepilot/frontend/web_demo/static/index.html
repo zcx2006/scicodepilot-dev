@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SciCodePilot Web Demo</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Memory-Augmented Structured Agent</p>
+          <h1>SciCodePilot: Research Code Diagnosis & Safe Repair Demo</h1>
+          <p class="subtitle">
+            Command Execution -> FailureMemory -> PatchPlan -> Safety Review
+            -> Human Confirmation -> Isolated Verification
+          </p>
+        </div>
+        <div class="hero-status">
+          <span id="connection-badge" class="badge neutral">Ready</span>
+          <span id="task-count" class="metric">0 tasks</span>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="control-panel panel">
+          <h2>Demo Control</h2>
+
+          <label for="task-select">Benchmark Task</label>
+          <select id="task-select"></select>
+
+          <label for="mode-select">Mode</label>
+          <select id="mode-select">
+            <option value="diagnosis">Diagnosis only</option>
+            <option value="repair">Repair with review</option>
+          </select>
+
+          <div class="button-row">
+            <button id="run-button" class="primary">Run</button>
+            <button id="confirm-button" class="warning" disabled>
+              Confirm Apply
+            </button>
+          </div>
+
+          <div class="status-box">
+            <span class="label">Current Status</span>
+            <strong id="status-text">Ready.</strong>
+          </div>
+
+          <div class="task-card">
+            <span class="label">Selected Task</span>
+            <h3 id="task-name">Loading tasks...</h3>
+            <p id="task-meta">-</p>
+          </div>
+        </aside>
+
+        <section class="main-panel">
+          <section class="panel stage-panel">
+            <div class="section-title">
+              <h2>Agent Pipeline</h2>
+              <span id="run-mode-badge" class="badge neutral">diagnosis</span>
+            </div>
+            <div id="stage-track" class="stage-track"></div>
+          </section>
+
+          <section class="cards-grid">
+            <article class="panel result-card" id="failure-card">
+              <div class="section-title">
+                <h2>FailureMemory</h2>
+                <span class="badge neutral" id="failure-badge">waiting</span>
+              </div>
+              <dl>
+                <dt>Error Type</dt>
+                <dd id="error-type">-</dd>
+                <dt>Summary</dt>
+                <dd id="error-summary">No failure analyzed yet.</dd>
+                <dt>Evidence</dt>
+                <dd><ul id="error-evidence"></ul></dd>
+                <dt>Root Cause Hypothesis</dt>
+                <dd id="root-cause">-</dd>
+                <dt>Repair Action</dt>
+                <dd id="repair-action">-</dd>
+              </dl>
+            </article>
+
+            <article class="panel result-card" id="patch-card">
+              <div class="section-title">
+                <h2>PatchPlan</h2>
+                <span class="badge neutral" id="patch-badge">waiting</span>
+              </div>
+              <dl>
+                <dt>Target File</dt>
+                <dd id="patch-target">-</dd>
+                <dt>Confidence</dt>
+                <dd id="patch-confidence">-</dd>
+                <dt>Proposed Change</dt>
+                <dd id="patch-change">-</dd>
+              </dl>
+              <pre id="patch-diff" class="diff-block">No patch proposed yet.</pre>
+            </article>
+
+            <article class="panel result-card" id="review-card">
+              <div class="section-title">
+                <h2>Safety Review</h2>
+                <span class="badge neutral" id="review-badge">waiting</span>
+              </div>
+              <dl>
+                <dt>Approved</dt>
+                <dd id="review-approved">-</dd>
+                <dt>Blocked</dt>
+                <dd id="review-blocked">-</dd>
+                <dt>Risk Level</dt>
+                <dd id="review-risk">-</dd>
+                <dt>Reasons</dt>
+                <dd><ul id="review-reasons"></ul></dd>
+                <dt>Warnings</dt>
+                <dd><ul id="review-warnings"></ul></dd>
+              </dl>
+            </article>
+
+            <article class="panel result-card" id="verify-card">
+              <div class="section-title">
+                <h2>Verification</h2>
+                <span class="badge neutral" id="verify-badge">waiting</span>
+              </div>
+              <dl>
+                <dt>Command</dt>
+                <dd id="verify-command">-</dd>
+                <dt>Return Code</dt>
+                <dd id="verify-return-code">-</dd>
+                <dt>Success</dt>
+                <dd id="verify-success">-</dd>
+                <dt>Final Status</dt>
+                <dd id="final-status">-</dd>
+                <dt>Summary</dt>
+                <dd id="final-summary">-</dd>
+              </dl>
+            </article>
+          </section>
+
+          <section class="panel transcript-panel">
+            <div class="section-title">
+              <h2>Timeline / Event Stream</h2>
+              <button id="copy-transcript-button" class="ghost">Copy</button>
+            </div>
+            <div id="transcript-note" class="transcript-note">
+              Transcript will be saved under outputs/frontend_logs.
+            </div>
+            <ol id="timeline" class="timeline"></ol>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
