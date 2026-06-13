@@ -1,0 +1,78 @@
+
+You are evaluating a scientific Python code repair benchmark.
+
+Task ID: repair_missing_file_004
+
+Read the task files and provide:
+1. likely error type
+2. root cause
+3. repair suggestion
+4. verification idea
+
+Return concise plain text.
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_missing_file_004",
+  "task_name": "Diagnose missing dataset file in a minimal script",
+  "category": "data_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "missing_file",
+  "expected_summary_keywords": [
+    "required file"
+  ],
+  "expected_root_cause_keywords": [
+    "file path",
+    "missing"
+  ],
+  "expected_repair_action_keywords": [
+    "verify",
+    "path"
+  ]
+}
+
+
+# FILE: repo\train.py
+from pathlib import Path
+
+
+def main() -> None:
+    print("Loading dataset metadata...", flush=True)
+    dataset_path = Path("data/train.csv")
+    dataset_path.read_text(encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# repair_missing_file_004
+
+This benchmark task contains a minimal training-style script that fails because
+a required dataset file is missing.
+
+Public task goals:
+
+- Run the target entry script.
+- Inspect the file loading failure.
+- Identify the high-level error category.
+- Produce a structured failure memory describing the likely cause and next
+  repair direction.
+
+Notes:
+
+- This task is diagnosis-only for now.
+- Missing data files should not be fabricated by the repair system.
+

@@ -1,0 +1,8 @@
+{
+  "task_id": "repair_missing_file_004",
+  "mode": "direct_llm",
+  "model": "deepseek-chat",
+  "status": "success",
+  "prompt_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_205013\\repair_missing_file_004\\direct_llm\\prompt.txt",
+  "response_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_205013\\repair_missing_file_004\\direct_llm\\response.txt"
+}

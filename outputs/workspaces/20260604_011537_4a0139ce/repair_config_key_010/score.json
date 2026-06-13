@@ -1,0 +1,12 @@
+{
+  "task_id": "repair_config_key_010",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260604_011537_4a0139ce/repair_config_key_010/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

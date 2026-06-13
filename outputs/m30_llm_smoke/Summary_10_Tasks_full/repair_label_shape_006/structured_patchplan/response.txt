@@ -1,0 +1,18 @@
+```json
+{
+  "task_id": "repair_label_shape_006",
+  "error_type": "label_shape",
+  "root_cause_hypothesis": "The labels tensor is created with batch_size + 1 (9) instead of batch_size (8), causing a shape mismatch with the logits tensor in CrossEntropyLoss.",
+  "repair_action": "Align the label batch size with the logits batch size by changing the labels tensor creation to use batch_size instead of batch_size + 1.",
+  "patch_plan_steps": [
+    "Open repo/train.py",
+    "Locate the line: labels = torch.randint(0, num_classes, (batch_size + 1,), device=device)",
+    "Change (batch_size + 1,) to (batch_size,) so that labels have the same first dimension as logits",
+    "Save the file"
+  ],
+  "safety_risks": [
+    "None identified; the change only corrects a dimension mismatch without altering model logic or data flow."
+  ],
+  "verification_command": "python train.py"
+}
+```

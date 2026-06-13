@@ -1,0 +1,35 @@
+{
+  "mode": "diagnosis",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_Workdir\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_173708",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_173708\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "command": {
+    "command": "python -m unittest -q test.test_InfoExtractor.TestInfoExtractor.test_parse_mpd_formats",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_173708\\workspace\\youtube_dl\\extractor\\pandatv.py:39: SyntaxWarning: \"is not\" with 'int' literal. Did you mean \"!=\"?\n  if error_code is not 0:\n======================================================================\nFAIL: test_parse_mpd_formats (test.test_InfoExtractor.TestInfoExtractor.test_parse_mpd_formats)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_173708\\workspace\\test\\test_InfoExtractor.py\", line 668, in test_parse_mpd_formats\n    expect_value(self, formats, expected_formats, None)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\external_smoke\\20260609_173708\\workspace\\test\\helper.py\", line 137, in expect_value\n    self.assertEqual(\n    ~~~~~~~~~~~~~~~~^\n        len(expected), len(got),\n        ^^^^^^^^^^^^^^^^^^^^^^^^\n        'Expect a list of length %d, but got a list of length %d for field %s' % (\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            len(expected), len(got), field))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 7 != 6 : Expect a list of length 7, but got a list of length 6 for field None\n\n----------------------------------------------------------------------\nRan 1 test in 0.054s\n\nFAILED (failures=1)\n"
+  },
+  "parsed_error": {
+    "error_type": "unsupported_external_failure",
+    "summary": "The command failed, but the current external repo smoke interface does not have a specialized parser rule for this failure.",
+    "evidence": [
+      "----------------------------------------------------------------------",
+      "Ran 1 test in 0.054s",
+      "FAILED (failures=1)"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "unsupported_external_failure",
+    "evidence": [
+      "----------------------------------------------------------------------",
+      "Ran 1 test in 0.054s",
+      "FAILED (failures=1)"
+    ],
+    "root_cause_hypothesis": "The command failed, but the current rule-based memory builder has no specialized hypothesis for this error type.",
+    "repair_action": "Inspect the stderr evidence manually and extend the failure-memory rules if this error type should be supported."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison."
+}

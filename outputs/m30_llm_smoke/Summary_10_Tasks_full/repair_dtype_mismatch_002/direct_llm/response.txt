@@ -1,0 +1,4 @@
+likely error type: dtype_mismatch
+root cause: Matrix multiplication `x @ w` fails because `x` is float32 and `w` is float64, which are incompatible dtypes for torch.matmul.
+repair suggestion: Ensure both tensors have the same dtype, e.g., change `w` to `torch.randn(4, 4, dtype=torch.float32)` or convert one tensor with `.to(torch.float32)`.
+verification idea: Run the script after aligning dtypes; it should print the output shape without error.

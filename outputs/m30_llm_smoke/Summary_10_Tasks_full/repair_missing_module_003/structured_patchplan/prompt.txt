@@ -1,0 +1,75 @@
+
+You are SciCodePilot's structured repair planner.
+
+Task ID: repair_missing_module_003
+
+Read the task files and output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_missing_module_003",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_missing_module_003",
+  "task_name": "Diagnose missing Python module in a minimal script",
+  "category": "environment_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "missing_module",
+  "expected_summary_keywords": [
+    "required Python module"
+  ],
+  "expected_root_cause_keywords": [
+    "module required"
+  ],
+  "expected_repair_action_keywords": [
+    "dependency",
+    "environment"
+  ]
+}
+
+
+# FILE: repo\train.py
+print("Importing optional scientific dependency...", flush=True)
+
+import definitely_missing_scicodepilot_dependency
+
+
+# FILE: task.md
+# repair_missing_module_003
+
+This benchmark task contains a minimal Python script that fails because an
+optional scientific dependency cannot be imported.
+
+Public task goals:
+
+- Run the target entry script.
+- Inspect the import failure.
+- Identify the high-level error category.
+- Produce a structured failure memory describing the likely cause and next
+  repair direction.
+
+Notes:
+
+- This task is diagnosis-only for now.
+- Missing dependencies are better handled by environment repair tooling than by
+  editing the benchmark script.
+

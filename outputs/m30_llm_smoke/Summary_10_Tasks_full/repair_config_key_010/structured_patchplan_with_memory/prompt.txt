@@ -1,0 +1,87 @@
+
+You are SciCodePilot's memory-augmented structured repair planner.
+
+Task ID: repair_config_key_010
+
+Use the following retrieved FailureMemory as in-context guidance:
+- Similar failures often require matching the error type, root cause, repair action, and verification command.
+- For source bugs, propose minimal source edits.
+- For environment/data bugs, do not propose unsafe source patches.
+
+Output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_config_key_010",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string",
+  "memory_usage": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_config_key_010",
+  "task_name": "Repair misspelled experiment configuration key",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "config_key_error",
+  "expected_summary_keywords": [
+    "config"
+  ],
+  "expected_root_cause_keywords": [
+    "configuration",
+    "key"
+  ],
+  "expected_repair_action_keywords": [
+    "learning_rate",
+    "key"
+  ]
+}
+
+
+# FILE: repo\train.py
+import sys
+
+
+def main() -> None:
+    print("Loading experiment configuration...", flush=True)
+    config = {"learning_rate": 0.001, "epochs": 2}
+
+    try:
+        learning_rate = config["learningrate"]
+    except KeyError as exc:
+        print(
+            f"KeyError: config_key_error: missing experiment config key {exc!s}",
+            file=sys.stderr,
+            flush=True,
+        )
+        sys.exit(1)
+
+    print(f"Config verified with learning_rate={learning_rate}.", flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# Repair Config Key Error
+
+The script reads a misspelled experiment config key. Repair the source code so
+it uses the existing `learning_rate` key.
+

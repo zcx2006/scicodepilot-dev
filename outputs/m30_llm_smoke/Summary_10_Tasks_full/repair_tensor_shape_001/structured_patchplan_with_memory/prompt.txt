@@ -1,0 +1,106 @@
+
+You are SciCodePilot's memory-augmented structured repair planner.
+
+Task ID: repair_tensor_shape_001
+
+Use the following retrieved FailureMemory as in-context guidance:
+- Similar failures often require matching the error type, root cause, repair action, and verification command.
+- For source bugs, propose minimal source edits.
+- For environment/data bugs, do not propose unsafe source patches.
+
+Output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_tensor_shape_001",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string",
+  "memory_usage": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_tensor_shape_001",
+  "task_name": "Diagnose tensor shape mismatch in a minimal PyTorch training script",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": ["torch"]
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "tensor_shape",
+  "expected_summary_keywords": [
+    "tensor shape mismatch"
+  ],
+  "expected_root_cause_keywords": [
+    "feature dimension",
+    "downstream layer"
+  ],
+  "expected_repair_action_keywords": [
+    "inspect",
+    "align"
+  ]
+}
+
+
+# FILE: repo\train.py
+import torch
+from torch import nn
+
+
+def main() -> None:
+    device = torch.device("cpu")
+
+    print("Loading synthetic dataset...", flush=True)
+    batch_size = 32
+    upstream_feature_dim = 64
+    x = torch.randn(batch_size, upstream_feature_dim, device=device)
+
+    print("Building tiny classifier head...", flush=True)
+    classifier_expected_dim = 128
+    num_classes = 10
+    classifier = nn.Linear(classifier_expected_dim, num_classes).to(device)
+
+    # This benchmark intentionally wires a 64-wide tensor into a layer that
+    # expects 128 features, so PyTorch raises the real RuntimeError.
+    logits = classifier(x)
+    print(logits.shape, flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# repair_tensor_shape_001
+
+This benchmark task contains a minimal PyTorch training-style script that fails
+because a classifier head expects 128 input features while the upstream tensor
+contains only 64 features.
+
+Public task goals:
+
+- Run the target training entry script.
+- Inspect the runtime failure.
+- Identify the high-level error category.
+- Produce a structured failure memory describing the likely cause and next
+  repair direction.
+
+Notes:
+
+- In M6 this task remains diagnosis-only.
+- No code patch is expected yet.
+- The expected diagnosis is stored separately for evaluation.
+- The script runs on CPU and does not require CUDA.
+

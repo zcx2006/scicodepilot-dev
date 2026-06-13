@@ -68,6 +68,8 @@ Workspace isolation is a practical requirement for repair experiments. It allows
 
 The experiments are organized around the internal controlled benchmark and ablation suite. The goal is to evaluate whether the system components work together under controlled conditions, not to report public benchmark results.
 
+The compact defense-ready result table is available in `report_assets/tables/final_results_summary.md`. A defense-oriented system overview figure is available in `report_assets/figures/defense_system_overview.md`.
+
 ### 6.1 Internal Controlled Benchmark Setup
 
 The benchmark contains 10 controlled tasks. Each task has a known failure mode and a hidden evaluator. Diagnosis mode validates failure detection and structured memory creation. Repair mode validates routing, patch planning, safety review, patch application when confirmed, and verification.
@@ -100,6 +102,18 @@ The reproducibility bundle captures the source revision, git status, Python vers
 
 For the current M23A bundle inspection, the manifest was generated successfully and reported no missing files. The bundle supports reproducibility for internal controlled experiments. It does not convert the internal benchmark into a public benchmark evaluation.
 
+### 6.6 External Repo Smoke Interface
+
+M26 adds a lightweight external repo smoke interface for local Python repositories. The interface copies a user-provided repo into an isolated workspace, runs a user-provided command, captures stdout, stderr, and return code, and then produces a diagnosis summary. In repair-plan mode, it can produce an `EnvRepairPlan` for missing module or missing file failures, or a non-applying `PatchPlan` plus `PatchSafetyReviewer` summary for supported source-code failures.
+
+This interface is a smoke tool, not a public benchmark result. It does not download BugsInPy or SWE-bench, does not run external baselines, and does not apply patches to the original repo. Unsupported external failures are reported as `unsupported_external_failure` with a no-op plan.
+
+### 6.7 Memory Retrieval Evaluation
+
+M28 evaluates whether deterministic `FailureMemory` retrieval can recover relevant internal controlled benchmark memory records. The evaluation reads local JSONL memory records, uses each record as a controlled query, retrieves top-k similar records with embedding-free token matching, and reports self-match, same-error-type, and same-category retrieval metrics.
+
+This is a component-level retrieval sanity check scoped to internal controlled benchmark records. It does not evaluate real LLM repair performance, does not report public benchmark performance, and does not compare against external systems. The current memory data has one record per controlled error type, so exact self retrieval is useful as a reproducibility check while same-error retrieval beyond the identical record remains limited by data size.
+
 ## 7. Public Benchmark Extension Plan
 
 The next evaluation step is a small public benchmark pilot. The recommended priority is a BugsInPy-style pilot first, followed by a small SWE-bench Lite subset, and only later an external baseline comparison. The initial pilot should use 3 to 5 Python tasks with pytest-based validation, short runtimes, and light dependencies.
@@ -120,4 +134,4 @@ The mock LLM repair path is not a real LLM evaluation. It only checks that a pla
 
 SciCodePilot demonstrates a structured failure-memory approach to reliable scientific code repair and reproducibility. On the internal 10-task controlled benchmark, the system diagnoses all controlled tasks, routes environment and data failures without unsafe automatic modification, repairs designed source-code failures through the full rule-based configuration, applies patches in isolated workspaces, and records reproducibility assets.
 
-The current contribution is a controlled, auditable repair pipeline and a report-ready evaluation pack. The next step is a carefully scoped public benchmark pilot, reported separately and without overstating the current internal controlled results.
+The current contribution is a controlled, auditable repair pipeline and a report-ready evaluation pack. The final packaged result is a defense-ready backend system with controlled benchmark results, safety and reproducibility assets, an external repo smoke interface, and deterministic `FailureMemory` retrieval evaluation. The next step is a carefully scoped public benchmark pilot, reported separately and without overstating the current internal controlled results.

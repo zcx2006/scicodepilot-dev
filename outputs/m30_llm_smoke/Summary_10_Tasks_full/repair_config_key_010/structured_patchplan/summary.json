@@ -1,0 +1,8 @@
+{
+  "task_id": "repair_config_key_010",
+  "mode": "structured_patchplan",
+  "model": "deepseek-chat",
+  "status": "success",
+  "prompt_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_184222\\repair_config_key_010\\structured_patchplan\\prompt.txt",
+  "response_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_184222\\repair_config_key_010\\structured_patchplan\\response.txt"
+}

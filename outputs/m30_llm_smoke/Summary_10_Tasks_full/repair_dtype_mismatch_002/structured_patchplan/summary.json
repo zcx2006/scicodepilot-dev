@@ -1,0 +1,8 @@
+{
+  "task_id": "repair_dtype_mismatch_002",
+  "mode": "structured_patchplan",
+  "model": "deepseek-chat",
+  "status": "success",
+  "prompt_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_204733\\repair_dtype_mismatch_002\\structured_patchplan\\prompt.txt",
+  "response_file": "D:\\Git\\My_Git_Project\\SciCodePilot\\scicodepilot-dev-main\\outputs\\m30_llm_smoke\\20260609_204733\\repair_dtype_mismatch_002\\structured_patchplan\\response.txt"
+}
