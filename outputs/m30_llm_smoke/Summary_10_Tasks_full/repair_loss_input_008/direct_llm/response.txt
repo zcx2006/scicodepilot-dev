@@ -1,0 +1,4 @@
+likely error type: loss_input_error
+root cause: The target_kind variable is set to "probabilities" instead of "class_indices", which causes CrossEntropyLoss to receive probability-like targets when it expects class indices.
+repair suggestion: Change the assignment `target_kind = "probabilities"` to `target_kind = "class_indices"`.
+verification idea: Run the script; it should exit with code 0 and print "Loss inputs verified." without error.

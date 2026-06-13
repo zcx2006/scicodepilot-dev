@@ -1,0 +1,4 @@
+likely error type: device_mismatch
+root cause: model_device is set to "cpu" while input_device is set to "cuda:0", causing a device mismatch error.
+repair suggestion: Change either model_device to "cuda:0" or input_device to "cpu" so both are on the same target device.
+verification idea: Run the script and confirm it prints "Device placement verified." and exits with code 0.

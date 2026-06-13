@@ -1,0 +1,15 @@
+{
+  "task_id": "repair_collate_fn_009",
+  "error_type": "collate_fn_error",
+  "root_cause_hypothesis": "The collate_fn returns a dictionary with keys 'features' and 'labels', but the training loop expects keys 'x' and 'y'.",
+  "repair_action": "Modify collate_fn to return a dictionary with keys 'x' and 'y' instead of 'features' and 'labels'.",
+  "patch_plan_steps": [
+    "Open repo/train.py.",
+    "In the collate_fn function, change the return statement from {\"features\": xs, \"labels\": ys} to {\"x\": xs, \"y\": ys}.",
+    "Save the file."
+  ],
+  "safety_risks": [
+    "No risks; the change is straightforward and only affects the dictionary keys."
+  ],
+  "verification_command": "python train.py"
+}

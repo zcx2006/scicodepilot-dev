@@ -1,0 +1,88 @@
+
+You are SciCodePilot's structured repair planner.
+
+Task ID: repair_collate_fn_009
+
+Read the task files and output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_collate_fn_009",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_collate_fn_009",
+  "task_name": "Repair DataLoader collate_fn batch structure mismatch",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "collate_fn_error",
+  "expected_summary_keywords": [
+    "collate"
+  ],
+  "expected_root_cause_keywords": [
+    "batch",
+    "structure"
+  ],
+  "expected_repair_action_keywords": [
+    "collate",
+    "batch"
+  ]
+}
+
+
+# FILE: repo\train.py
+import sys
+
+
+def collate_fn(samples):
+    xs = [sample["x"] for sample in samples]
+    ys = [sample["y"] for sample in samples]
+    return {"features": xs, "labels": ys}
+
+
+def main() -> None:
+    print("Collating tiny dataset...", flush=True)
+    samples = [{"x": 1, "y": 0}, {"x": 2, "y": 1}]
+    batch = collate_fn(samples)
+
+    try:
+        _ = batch["x"], batch["y"]
+    except KeyError as exc:
+        print(
+            f"KeyError: collate_fn_error: batch missing expected key {exc!s}",
+            file=sys.stderr,
+            flush=True,
+        )
+        sys.exit(1)
+
+    print("Batch structure verified.", flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# Repair Collate Function Error
+
+The training loop expects a batch dictionary with `x` and `y`, but the
+collate function returns a mismatched structure. Repair the collate function.
+

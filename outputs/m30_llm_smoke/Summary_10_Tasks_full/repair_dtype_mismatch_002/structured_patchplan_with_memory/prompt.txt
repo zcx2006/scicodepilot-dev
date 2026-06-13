@@ -1,0 +1,93 @@
+
+You are SciCodePilot's memory-augmented structured repair planner.
+
+Task ID: repair_dtype_mismatch_002
+
+Use the following retrieved FailureMemory as in-context guidance:
+- Similar failures often require matching the error type, root cause, repair action, and verification command.
+- For source bugs, propose minimal source edits.
+- For environment/data bugs, do not propose unsafe source patches.
+
+Output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_dtype_mismatch_002",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string",
+  "memory_usage": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_dtype_mismatch_002",
+  "task_name": "Diagnose dtype mismatch in a minimal PyTorch script",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": ["torch"]
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "dtype_mismatch",
+  "expected_summary_keywords": [
+    "incompatible data types"
+  ],
+  "expected_root_cause_keywords": [
+    "incompatible dtypes"
+  ],
+  "expected_repair_action_keywords": [
+    "dtype",
+    "compatible"
+  ]
+}
+
+
+# FILE: repo\train.py
+import torch
+
+
+def main() -> None:
+    print("Loading synthetic dataset...", flush=True)
+    print("Building dtype mismatch computation...", flush=True)
+
+    x = torch.randn(4, 4, dtype=torch.float32)
+    w = torch.randn(4, 4, dtype=torch.float64)
+
+    y = x @ w
+    print(y.shape, flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# repair_dtype_mismatch_002
+
+This benchmark task contains a minimal PyTorch script that fails because a
+matrix multiplication receives tensors with incompatible dtypes.
+
+Public task goals:
+
+- Run the target training-style entry script.
+- Inspect the runtime failure.
+- Identify the high-level error category.
+- Produce a structured failure memory describing the likely cause and next
+  repair direction.
+
+Notes:
+
+- This task is diagnosis-first and can be repaired by aligning tensor dtypes.
+- The script runs on CPU and does not require CUDA.
+

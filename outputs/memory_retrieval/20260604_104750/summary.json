@@ -1,0 +1,156 @@
+{
+  "memory_path": "/home/zengl/projects/SciCodePilot/artifacts/failure_memory/memory_records.jsonl",
+  "output_dir": "/home/zengl/projects/SciCodePilot/outputs/memory_retrieval/20260604_104750",
+  "query": {
+    "record_id": "demo_query_tensor_shape",
+    "task_id": "external_demo_query",
+    "error_type": "tensor_shape",
+    "failure_category": "source_code",
+    "command": "python train.py",
+    "exception_type": "RuntimeError",
+    "error_message": "mat1 and mat2 shapes cannot be multiplied",
+    "traceback_summary": "RuntimeError from matrix multiplication with incompatible tensor dimensions.",
+    "root_cause_hypothesis": "The downstream layer input dimension does not match upstream tensor features.",
+    "repair_action": "Inspect tensor dimensions and align the downstream layer input dimension.",
+    "patch_plan_summary": null,
+    "verification_success": null,
+    "score": null,
+    "created_from": "memory_retrieval_demo",
+    "metadata": {
+      "scope": "offline demo query"
+    }
+  },
+  "retrieved": [
+    {
+      "record": {
+        "record_id": "internal_controlled_repair_tensor_shape_001",
+        "task_id": "repair_tensor_shape_001",
+        "error_type": "tensor_shape",
+        "failure_category": "source_code",
+        "command": "python train.py",
+        "exception_type": "RuntimeError",
+        "error_message": "mat1 and mat2 shapes cannot be multiplied",
+        "traceback_summary": "mat1 and mat2 shapes cannot be multiplied",
+        "root_cause_hypothesis": "The tensor feature dimension used in matrix multiplication is inconsistent with the expected input dimension of the downstream layer.",
+        "repair_action": "Inspect the tensor shape before the failing matrix multiplication and align the downstream layer input dimension with the actual upstream feature dimension.",
+        "patch_plan_summary": "Align classifier_expected_dim with upstream_feature_dim.",
+        "verification_success": true,
+        "score": 1.0,
+        "created_from": "internal_controlled_benchmark",
+        "metadata": {
+          "category": "runtime_repair_diagnosis",
+          "record_scope": "internal controlled benchmark only",
+          "source_summary": "/home/zengl/projects/SciCodePilot/outputs/ablations/20260522_195640/ablation_summary.json",
+          "task_name": "Diagnose tensor shape mismatch in a minimal PyTorch training script"
+        }
+      },
+      "score": 2.028947,
+      "matched_terms": [
+        "align",
+        "and",
+        "be",
+        "cannot",
+        "dimension",
+        "dimension.",
+        "downstream",
+        "input",
+        "inspect",
+        "layer",
+        "mat1",
+        "mat2",
+        "matrix",
+        "multiplication",
+        "multiplied",
+        "python",
+        "runtimeerror",
+        "shapes",
+        "source_code",
+        "tensor",
+        "tensor_shape",
+        "the",
+        "train.py",
+        "upstream",
+        "with"
+      ]
+    },
+    {
+      "record": {
+        "record_id": "internal_controlled_repair_dtype_mismatch_002",
+        "task_id": "repair_dtype_mismatch_002",
+        "error_type": "dtype_mismatch",
+        "failure_category": "source_code",
+        "command": "python train.py",
+        "exception_type": "RuntimeError",
+        "error_message": "mat1 and mat2 must have the same dtype",
+        "traceback_summary": "mat1 and mat2 must have the same dtype",
+        "root_cause_hypothesis": "The failing operation received tensors with incompatible dtypes, causing the operator to reject the computation.",
+        "repair_action": "Inspect the dtype of the tensors involved in the failing operation and convert them to compatible dtypes before the computation.",
+        "patch_plan_summary": "Convert float64 tensor construction to float32.",
+        "verification_success": true,
+        "score": 1.0,
+        "created_from": "internal_controlled_benchmark",
+        "metadata": {
+          "category": "runtime_repair_diagnosis",
+          "record_scope": "internal controlled benchmark only",
+          "source_summary": "/home/zengl/projects/SciCodePilot/outputs/ablations/20260522_195640/ablation_summary.json",
+          "task_name": "Diagnose dtype mismatch in a minimal PyTorch script"
+        }
+      },
+      "score": 0.839535,
+      "matched_terms": [
+        "and",
+        "incompatible",
+        "inspect",
+        "mat1",
+        "mat2",
+        "python",
+        "runtimeerror",
+        "source_code",
+        "tensor",
+        "the",
+        "train.py",
+        "with"
+      ]
+    },
+    {
+      "record": {
+        "record_id": "internal_controlled_repair_device_mismatch_007",
+        "task_id": "repair_device_mismatch_007",
+        "error_type": "device_mismatch",
+        "failure_category": "source_code",
+        "command": "python train.py",
+        "exception_type": "RuntimeError",
+        "error_message": "Expected all tensors to be on the same device",
+        "traceback_summary": "Expected all tensors to be on the same device",
+        "root_cause_hypothesis": "Some tensors or model parameters are located on different devices, such as CPU and CUDA, during the same computation.",
+        "repair_action": "Inspect model and tensor device placement, then move all operands involved in the failing computation to the same target device.",
+        "patch_plan_summary": "Align input tensor device with model device.",
+        "verification_success": true,
+        "score": 1.0,
+        "created_from": "internal_controlled_benchmark",
+        "metadata": {
+          "category": "runtime_repair_diagnosis",
+          "record_scope": "internal controlled benchmark only",
+          "source_summary": "/home/zengl/projects/SciCodePilot/outputs/ablations/20260522_195640/ablation_summary.json",
+          "task_name": "Repair device mismatch in a minimal tensor workflow"
+        }
+      },
+      "score": 0.830435,
+      "matched_terms": [
+        "align",
+        "and",
+        "be",
+        "input",
+        "inspect",
+        "python",
+        "runtimeerror",
+        "source_code",
+        "tensor",
+        "the",
+        "train.py",
+        "with"
+      ]
+    }
+  ],
+  "scope_note": "Offline memory retrieval demo; no real LLM call and no public benchmark claim."
+}

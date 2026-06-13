@@ -1,0 +1,101 @@
+
+You are SciCodePilot's memory-augmented structured repair planner.
+
+Task ID: repair_label_shape_006
+
+Use the following retrieved FailureMemory as in-context guidance:
+- Similar failures often require matching the error type, root cause, repair action, and verification command.
+- For source bugs, propose minimal source edits.
+- For environment/data bugs, do not propose unsafe source patches.
+
+Output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_label_shape_006",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string",
+  "memory_usage": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_label_shape_006",
+  "task_name": "Repair label batch shape mismatch in a minimal PyTorch script",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": ["torch"]
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "label_shape",
+  "expected_summary_keywords": [
+    "label batch shape"
+  ],
+  "expected_root_cause_keywords": [
+    "label",
+    "batch size"
+  ],
+  "expected_repair_action_keywords": [
+    "align",
+    "batch size"
+  ]
+}
+
+
+# FILE: repo\train.py
+import torch
+from torch import nn
+
+
+def main() -> None:
+    device = torch.device("cpu")
+
+    print("Loading synthetic classification batch...", flush=True)
+    batch_size = 8
+    num_classes = 3
+    feature_dim = 4
+
+    print("Computing classification loss...", flush=True)
+    features = torch.randn(batch_size, feature_dim, device=device)
+    classifier = nn.Linear(feature_dim, num_classes).to(device)
+    logits = classifier(features)
+
+    labels = torch.randint(0, num_classes, (batch_size + 1,), device=device)
+    loss = nn.CrossEntropyLoss()(logits, labels)
+    print(loss.item(), flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# repair_label_shape_006
+
+This benchmark task contains a minimal PyTorch classification script that fails
+because target labels have a different batch size from the logits.
+
+Public task goals:
+
+- Run the target training-style script.
+- Inspect the loss computation failure.
+- Identify the high-level error category.
+- Produce a structured failure memory and patch plan.
+
+Notes:
+
+- The script runs on CPU and does not require CUDA.
+- The repair should align the label batch size with the logits batch size.
+

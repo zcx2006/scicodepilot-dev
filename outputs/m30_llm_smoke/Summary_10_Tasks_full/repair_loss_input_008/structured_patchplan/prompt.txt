@@ -1,0 +1,80 @@
+
+You are SciCodePilot's structured repair planner.
+
+Task ID: repair_loss_input_008
+
+Read the task files and output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_loss_input_008",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_loss_input_008",
+  "task_name": "Repair invalid loss input target preparation",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "loss_input_error",
+  "expected_summary_keywords": [
+    "loss input"
+  ],
+  "expected_root_cause_keywords": [
+    "loss",
+    "target"
+  ],
+  "expected_repair_action_keywords": [
+    "target",
+    "class"
+  ]
+}
+
+
+# FILE: repo\train.py
+import sys
+
+
+def main() -> None:
+    print("Preparing logits and targets...", flush=True)
+    target_kind = "probabilities"
+
+    if target_kind != "class_indices":
+        print(
+            "ValueError: loss_input_error: CrossEntropyLoss expected class index "
+            "targets, but received probability-like targets.",
+            file=sys.stderr,
+            flush=True,
+        )
+        sys.exit(1)
+
+    print("Loss inputs verified.", flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# Repair Loss Input Error
+
+The script prepares targets for a classification loss with the wrong target
+kind. Repair the source code so the loss receives class-index targets.
+

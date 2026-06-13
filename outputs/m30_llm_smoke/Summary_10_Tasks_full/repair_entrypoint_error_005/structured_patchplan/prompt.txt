@@ -1,0 +1,77 @@
+
+You are SciCodePilot's structured repair planner.
+
+Task ID: repair_entrypoint_error_005
+
+Read the task files and output ONLY valid JSON.
+
+Schema:
+{
+  "task_id": "repair_entrypoint_error_005",
+  "error_type": "string",
+  "root_cause_hypothesis": "string",
+  "repair_action": "string",
+  "patch_plan_steps": ["string"],
+  "safety_risks": ["string"],
+  "verification_command": "string"
+}
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_entrypoint_error_005",
+  "task_name": "Repair misspelled Python entrypoint call",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "entrypoint_error",
+  "expected_summary_keywords": [
+    "entrypoint"
+  ],
+  "expected_root_cause_keywords": [
+    "entrypoint",
+    "misspelled"
+  ],
+  "expected_repair_action_keywords": [
+    "mainn",
+    "main"
+  ]
+}
+
+
+# FILE: repo\train.py
+def main() -> None:
+    print("Entrypoint executed successfully.", flush=True)
+
+
+if __name__ == "__main__":
+    mainn()
+
+
+# FILE: task.md
+# repair_entrypoint_error_005
+
+This benchmark task contains a minimal Python script where the entrypoint call
+is misspelled.
+
+Public task goals:
+
+- Run the target entry script.
+- Inspect the NameError failure.
+- Identify the high-level error category.
+- Produce a structured failure memory and patch plan for the typo.
+
+Notes:
+
+- The script defines `main()` but incorrectly calls `mainn()`.
+- The repair plan should correct the entrypoint call.
+

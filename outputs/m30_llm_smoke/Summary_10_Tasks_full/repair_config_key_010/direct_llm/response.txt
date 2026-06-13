@@ -1,0 +1,4 @@
+likely error type: config_key_error
+root cause: The code attempts to access config["learningrate"] but the dictionary key is "learning_rate".
+repair suggestion: Change config["learningrate"] to config["learning_rate"].
+verification idea: Run the script and confirm it prints "Config verified with learning_rate=0.001." without error.

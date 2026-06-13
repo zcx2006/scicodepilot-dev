@@ -1,0 +1,12 @@
+{
+  "task_id": "repair_device_mismatch_007",
+  "success": true,
+  "score": 1.0,
+  "verification_command": "python train.py",
+  "return_code": 0,
+  "message": "Hidden evaluation command succeeded.",
+  "score_path": "outputs/workspaces/20260604_101251_ddbf2e73/repair_device_mismatch_007/score.json",
+  "checks": {
+    "command_success": true
+  }
+}

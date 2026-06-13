@@ -1,0 +1,75 @@
+
+You are evaluating a scientific Python code repair benchmark.
+
+Task ID: repair_device_mismatch_007
+
+Read the task files and provide:
+1. likely error type
+2. root cause
+3. repair suggestion
+4. verification idea
+
+Return concise plain text.
+
+TASK FILES:
+
+
+# FILE: metadata.json
+{
+  "task_id": "repair_device_mismatch_007",
+  "task_name": "Repair device mismatch in a minimal tensor workflow",
+  "category": "runtime_repair_diagnosis",
+  "difficulty": "easy",
+  "entry_command": "python train.py",
+  "expected_diagnosis_file": "reference/expected_diagnosis.json",
+  "requires": []
+}
+
+
+# FILE: reference\expected_diagnosis.json
+{
+  "expected_error_type": "device_mismatch",
+  "expected_summary_keywords": [
+    "incompatible devices"
+  ],
+  "expected_root_cause_keywords": [
+    "different devices"
+  ],
+  "expected_repair_action_keywords": [
+    "same target device"
+  ]
+}
+
+
+# FILE: repo\train.py
+import sys
+
+
+def main() -> None:
+    print("Preparing model and batch devices...", flush=True)
+    model_device = "cpu"
+    input_device = "cuda:0"
+
+    if model_device != input_device:
+        print(
+            "RuntimeError: Expected all tensors to be on the same device, but "
+            "found at least two devices, cuda:0 and cpu!",
+            file=sys.stderr,
+            flush=True,
+        )
+        sys.exit(1)
+
+    print("Device placement verified.", flush=True)
+
+
+if __name__ == "__main__":
+    main()
+
+
+# FILE: task.md
+# Repair Device Mismatch
+
+The script simulates a scientific training workflow where model and input
+devices are inconsistent. Repair the source code so the device labels are
+aligned and the command exits successfully.
+
