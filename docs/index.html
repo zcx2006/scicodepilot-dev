@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SciCodePilot</title>
+    <link rel="stylesheet" href="static/site.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#home">
+        <span class="brand-mark">S</span>
+        <span>
+          <strong>SciCodePilot</strong>
+          <small>Research Code Repair Agent</small>
+        </span>
+      </a>
+      <nav>
+        <a href="#home">Overview</a>
+        <a href="#method">Method</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#memory">Memory</a>
+        <a href="#llm">LLM Smoke</a>
+        <a href="#safety">Safety</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#frontend">Frontend</a>
+        <a href="#run">Run Locally</a>
+      </nav>
+      <p class="sidebar-caption">
+        Public static homepage. The live repair demo runs locally with FastAPI.
+      </p>
+    </aside>
+
+    <main class="page">
+      <section id="home" class="hero section">
+        <div class="hero-copy">
+          <p class="eyebrow">Memory-Augmented Structured Agent</p>
+          <h1>Reliable Scientific Code Diagnosis and Safe Repair</h1>
+          <p class="lead">
+            SciCodePilot explores whether structured failure memory, retrieval,
+            constrained patch planning, safety review, and isolated verification
+            can make scientific Python repair more auditable and reproducible
+            than direct traceback-to-patch generation.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#run">Run the Demo Locally</a>
+            <a class="button secondary" href="#method">View Method</a>
+          </div>
+        </div>
+        <figure class="figure-card hero-figure">
+          <img src="assets/figures/fig1_m30_evidence_matrix.png" alt="M30 evidence matrix" />
+          <figcaption>M30 evidence matrix: claims are tied to concrete artifacts.</figcaption>
+        </figure>
+      </section>
+
+      <section id="method" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Method</p>
+          <h2>A structured repair pipeline with explicit safety boundaries</h2>
+        </div>
+        <div class="flow-grid">
+          <div><strong>1</strong><span>Run task and capture stdout / stderr</span></div>
+          <div><strong>2</strong><span>Parse traceback into FailureMemory</span></div>
+          <div><strong>3</strong><span>Route source, environment, and data issues</span></div>
+          <div><strong>4</strong><span>Generate PatchPlan or EnvRepairPlan</span></div>
+          <div><strong>5</strong><span>Review, confirm, apply, and verify</span></div>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Role</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>FailureMemory</td>
+                <td>Structured state for diagnosis, retrieval, and review.</td>
+                <td>Error type, evidence, root cause, repair action.</td>
+              </tr>
+              <tr>
+                <td>EnvDoctor</td>
+                <td>Routes missing dependency and missing data failures away from source patches.</td>
+                <td>EnvRepairPlan and suggested user actions.</td>
+              </tr>
+              <tr>
+                <td>PatchSafetyReviewer</td>
+                <td>Checks patch risk before confirmation and application.</td>
+                <td>Approved, blocked, risk level, reasons.</td>
+              </tr>
+              <tr>
+                <td>Isolated verifier</td>
+                <td>Applies patches away from the original task and reruns verification.</td>
+                <td>Command, return code, score, transcript.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="benchmark" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Controlled Benchmark</p>
+          <h2>Ten focused scientific-code failures for component-level evaluation</h2>
+        </div>
+        <p class="section-copy">
+          The internal benchmark is small by design. It validates diagnosis,
+          routing, repair planning, review, and verification behavior. It is not
+          reported as public benchmark performance.
+        </p>
+        <div class="stats-grid">
+          <div class="stat"><strong>10</strong><span>controlled tasks</span></div>
+          <div class="stat"><strong>10/10</strong><span>diagnosis pass</span></div>
+          <div class="stat"><strong>8</strong><span>source patch tasks</span></div>
+          <div class="stat"><strong>2</strong><span>env/data routed tasks</span></div>
+        </div>
+        <div class="figure-grid triple">
+          <figure class="figure-card">
+            <img src="assets/figures/fig7_failure_taxonomy_pie.png" alt="Failure taxonomy" />
+            <figcaption>Failure taxonomy across internal controlled tasks.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig11_task_heatmap.png" alt="Task heatmap" />
+            <figcaption>Task-level evidence heatmap.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig12_task_mode_comparison.png" alt="Task mode comparison" />
+            <figcaption>Diagnosis and repair mode comparison.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="memory" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">FailureMemory Retrieval</p>
+          <h2>Failures become reusable, searchable agent memory</h2>
+        </div>
+        <div class="two-column">
+          <p>
+            FailureMemory stores the failure type, evidence, root-cause
+            hypothesis, repair action, command context, and verification result.
+            It supports later retrieval and prompt construction.
+          </p>
+          <p>
+            The current retrieval evaluation is deterministic and scoped to the
+            internal benchmark. It demonstrates memory plumbing and case-based
+            reuse without claiming large-scale semantic retrieval.
+          </p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><strong>10</strong><span>memory records</span></div>
+          <div class="stat"><strong>10/10</strong><span>top-1 self match</span></div>
+          <div class="stat"><strong>10/10</strong><span>top-3 self match</span></div>
+          <div class="stat"><strong>10/10</strong><span>error-type match</span></div>
+        </div>
+      </section>
+
+      <section id="llm" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">LLM Smoke Evidence</p>
+          <h2>Structured PatchPlan output is more reviewable than free-form repair text</h2>
+        </div>
+        <p class="section-copy">
+          The M30 smoke artifacts compare direct LLM repair, structured
+          PatchPlan generation, and retrieved-memory structured PatchPlan
+          generation. These runs support output-format and reviewability
+          analysis, not real-world repair performance claims.
+        </p>
+        <div class="figure-grid triple">
+          <figure class="figure-card">
+            <img src="assets/figures/fig2_llm_mode_radar.png" alt="LLM mode radar" />
+            <figcaption>Direct LLM vs structured PatchPlan vs memory-augmented PatchPlan.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig9_avg_response_length.png" alt="Average response length" />
+            <figcaption>Average response length by LLM mode.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig13_response_distribution.png" alt="Response distribution" />
+            <figcaption>Response distribution across smoke runs.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="safety" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Safety and Ablation</p>
+          <h2>Repair is gated by review, human confirmation, and isolated verification</h2>
+        </div>
+        <div class="two-column">
+          <p>
+            PatchSafetyReviewer checks path traversal, dependency installation,
+            shell-command edits, benchmark mutation, and overly broad changes
+            before any patch is applied.
+          </p>
+          <p>
+            Ablation artifacts separate diagnosis-only, repair without apply,
+            full rule-based repair, mock LLM repair, and safety stress cases so
+            the contribution of each component can be discussed.
+          </p>
+        </div>
+        <div class="figure-grid">
+          <figure class="figure-card">
+            <img src="assets/figures/fig6_evidence_volume.png" alt="Evidence volume" />
+            <figcaption>Evidence volume from outputs, reports, figures, and tables.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig10_avg_word_count.png" alt="Average word count" />
+            <figcaption>Average word-count analysis for response artifacts.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="comparison" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Positioning</p>
+          <h2>Architectural comparison without public benchmark overclaiming</h2>
+        </div>
+        <p class="section-copy">
+          SciCodePilot is positioned as a controlled, auditable repair
+          prototype. The comparison focuses on memory, routing, structured
+          planning, safety review, and reproducibility evidence. It does not
+          claim to outperform SWE-agent, OpenHands, AutoCodeRover, or
+          mini-swe-agent on public benchmarks.
+        </p>
+        <div class="figure-grid triple">
+          <figure class="figure-card">
+            <img src="assets/figures/fig3_agent_comparison_radar.png" alt="Agent comparison radar" />
+            <figcaption>Agent capability positioning across reviewability and safety dimensions.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig4_miniswe_workflow.png" alt="mini-swe-agent workflow" />
+            <figcaption>One-case mini-swe-agent comparison artifact for discussion.</figcaption>
+          </figure>
+          <figure class="figure-card">
+            <img src="assets/figures/fig8_agent_strengths.png" alt="Agent strengths" />
+            <figcaption>Qualitative strengths for final defense positioning.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="frontend" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Frontend Interfaces</p>
+          <h2>Static homepage for publication, local FastAPI demo for live repair</h2>
+        </div>
+        <div class="interface-grid">
+          <article class="info-card">
+            <span>GitHub Pages Homepage</span>
+            <h3>Static public project site</h3>
+            <p>
+              This page is designed for public sharing. It presents the research
+              story, figures, results, and usage instructions without needing a
+              Python backend.
+            </p>
+          </article>
+          <article class="info-card">
+            <span>FastAPI Web Demo</span>
+            <h3>Local live event-stream demo</h3>
+            <p>
+              The local demo streams BackendController events into the browser
+              and supports Run, Confirm Apply, FailureMemory, PatchPlan, Safety
+              Review, Verification, and transcript export.
+            </p>
+          </article>
+          <article class="info-card">
+            <span>Textual Terminal UI</span>
+            <h3>Developer-facing backup frontend</h3>
+            <p>
+              The Textual app remains as a terminal demo and technical proof
+              that the frontend can consume the same backend event stream.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="run" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Run Locally</p>
+          <h2>Use the public homepage with the local live demo</h2>
+        </div>
+        <div class="command-grid">
+          <div class="command-card">
+            <span>Install</span>
+            <code>pip install -r requirements.txt</code>
+          </div>
+          <div class="command-card">
+            <span>Launch local web demo</span>
+            <code>python scripts/run_web_demo.py</code>
+          </div>
+          <div class="command-card">
+            <span>Open local demo</span>
+            <code>http://127.0.0.1:8000</code>
+          </div>
+        </div>
+        <p class="note">
+          GitHub Pages can host this static homepage. The live Run / Confirm
+          Apply behavior requires the local FastAPI backend.
+        </p>
+      </section>
+    </main>
+
+    <div id="image-modal" class="image-modal" aria-hidden="true">
+      <button id="image-modal-close" class="modal-close" type="button">Close</button>
+      <figure class="modal-figure">
+        <img id="image-modal-img" src="" alt="" />
+        <figcaption id="image-modal-caption"></figcaption>
+      </figure>
+    </div>
+
+    <script src="static/site.js"></script>
+  </body>
+</html>

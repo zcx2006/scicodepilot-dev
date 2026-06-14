@@ -51,6 +51,31 @@ http://127.0.0.1:8000
 
 网页 demo 的目标是用于课堂展示、答辩录屏和组内演示。它不是生产级在线服务，默认以本地方式运行。
 
+## GitHub Pages 静态主页
+
+仓库同时提供了一个可用于 GitHub Pages 的静态项目主页：
+
+```text
+docs/index.html
+```
+
+该页面展示项目介绍、方法、benchmark、memory retrieval、LLM smoke、safety analysis、agent comparison、前端说明和运行方式。它不依赖 Python 后端，因此可以作为公开项目 homepage 发布。
+
+启用方式：
+
+1. 在 GitHub 仓库进入 `Settings`；
+2. 打开 `Pages`；
+3. Source 选择 `Deploy from a branch`；
+4. Branch 选择包含该页面的分支；
+5. Folder 选择 `/docs`；
+6. 保存后等待 GitHub Pages 构建完成。
+
+注意：GitHub Pages 是静态网页，不能在线运行 `Run / Confirm Apply`。真正的事件流 demo 仍需本地运行：
+
+```powershell
+python scripts/run_web_demo.py
+```
+
 ## Textual 终端前端
 
 项目也保留了 Textual 终端前端，可作为备用 demo 和开发调试入口：
