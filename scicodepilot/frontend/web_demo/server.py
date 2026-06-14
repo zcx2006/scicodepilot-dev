@@ -15,6 +15,7 @@ from scicodepilot.backend.event_serializer import event_to_dict
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 FRONTEND_LOG_DIR = PROJECT_ROOT / "outputs" / "frontend_logs"
+REPORT_ASSETS_DIR = PROJECT_ROOT / "report_assets"
 
 
 def _task_to_dict(task: Any) -> dict[str, Any]:
@@ -79,6 +80,8 @@ def create_app(controller: BackendController | None = None) -> FastAPI:
     app.state.controller = controller or BackendController()
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    if REPORT_ASSETS_DIR.exists():
+        app.mount("/assets", StaticFiles(directory=REPORT_ASSETS_DIR), name="assets")
 
     @app.get("/")
     async def index() -> FileResponse:

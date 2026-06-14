@@ -3,155 +3,635 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SciCodePilot Web Demo</title>
+    <title>SciCodePilot</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <header class="hero">
-        <div>
+    <aside class="site-sidebar" aria-label="Project navigation">
+      <a class="brand" href="#home">
+        <span class="brand-mark">S</span>
+        <span>
+          <strong>SciCodePilot</strong>
+          <small>Scientific Code Repair Agent</small>
+        </span>
+      </a>
+      <nav>
+        <a href="#home">Overview</a>
+        <a href="#motivation">Motivation</a>
+        <a href="#method">Method</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#memory">Memory</a>
+        <a href="#llm">LLM Smoke</a>
+        <a href="#results">Results</a>
+        <a href="#safety">Safety</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#frontend">Frontend</a>
+        <a href="#demo">Live Demo</a>
+        <a href="#external">External Smoke</a>
+        <a href="#run">Run Locally</a>
+      </nav>
+      <div class="sidebar-note">
+        <span id="connection-badge" class="badge neutral">Ready</span>
+        <span id="task-count" class="metric">0 tasks</span>
+      </div>
+    </aside>
+
+    <main class="site-main">
+      <section id="home" class="hero-section">
+        <div class="hero-copy">
           <p class="eyebrow">Memory-Augmented Structured Agent</p>
-          <h1>SciCodePilot: Research Code Diagnosis & Safe Repair Demo</h1>
-          <p class="subtitle">
-            Command Execution -> FailureMemory -> PatchPlan -> Safety Review
-            -> Human Confirmation -> Isolated Verification
+          <h1>Reliable Scientific Code Diagnosis and Safe Repair</h1>
+          <p class="hero-lead">
+            SciCodePilot studies whether structured failure memory, retrieval,
+            constrained patch planning, safety review, and isolated verification
+            can make scientific Python repair more auditable and reproducible
+            than direct traceback-to-patch generation.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary-link" href="#demo">Open Demo</a>
+            <a class="button secondary-link" href="#method">Read Method</a>
+          </div>
+        </div>
+        <div class="hero-visual panel">
+          <div class="pipeline-strip">
+            <span>Command Execution</span>
+            <span>FailureMemory</span>
+            <span>PatchPlan</span>
+            <span>Safety Review</span>
+            <span>Verification</span>
+          </div>
+          <img
+            src="/assets/figures/fig1_m30_evidence_matrix.png"
+            alt="SciCodePilot evidence matrix"
+          />
+        </div>
+      </section>
+
+      <section id="motivation" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Research Problem</p>
+          <h2>Why not directly ask an LLM to fix the traceback?</h2>
+        </div>
+        <div class="two-column">
+          <p>
+            Scientific Python and machine learning experiments often fail
+            because of tensor shape, dtype, device, loss input, collate
+            function, config key, missing dependency, or missing data-file
+            issues. These failures are usually local, but they strongly affect
+            reproducibility.
+          </p>
+          <p>
+            Direct LLM patching tends to produce free-form edits from the
+            current traceback alone. SciCodePilot instead turns the failure into
+            an inspectable intermediate state, routes environment and data
+            issues away from source patches, and records evidence before and
+            after repair.
           </p>
         </div>
-        <div class="hero-status">
-          <span id="connection-badge" class="badge neutral">Ready</span>
-          <span id="task-count" class="metric">0 tasks</span>
+        <div class="research-grid">
+          <article class="research-card">
+            <span>RQ1</span>
+            <strong>Structured diagnosis</strong>
+            <p>Can raw stderr and traceback be converted into stable FailureMemory?</p>
+          </article>
+          <article class="research-card">
+            <span>RQ2</span>
+            <strong>Safety-aware routing</strong>
+            <p>Can the system avoid patching source code for dependency/data failures?</p>
+          </article>
+          <article class="research-card">
+            <span>RQ3</span>
+            <strong>Constrained planning</strong>
+            <p>Are structured PatchPlans easier to review than free-form patches?</p>
+          </article>
+          <article class="research-card">
+            <span>RQ4</span>
+            <strong>Memory augmentation</strong>
+            <p>Can retrieved FailureMemory examples support future repair planning?</p>
+          </article>
         </div>
-      </header>
+      </section>
 
-      <section class="workspace">
-        <aside class="control-panel panel">
-          <h2>Demo Control</h2>
+      <section id="method" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Method</p>
+          <h2>A structured repair pipeline with explicit safety boundaries</h2>
+        </div>
+        <div class="method-flow">
+          <div><strong>1</strong><span>Run task and capture stdout/stderr</span></div>
+          <div><strong>2</strong><span>Parse traceback into FailureMemory</span></div>
+          <div><strong>3</strong><span>Route source, environment, and data issues</span></div>
+          <div><strong>4</strong><span>Generate PatchPlan or EnvRepairPlan</span></div>
+          <div><strong>5</strong><span>Review, confirm, apply, and verify</span></div>
+        </div>
+        <div class="table-card panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Role</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>FailureMemory</td>
+                <td>Structured state for diagnosis, retrieval, and review</td>
+                <td>Error type, evidence, root cause, repair action</td>
+              </tr>
+              <tr>
+                <td>EnvDoctor</td>
+                <td>Separates environment/data failures from source-code patches</td>
+                <td>EnvRepairPlan, suggested user actions</td>
+              </tr>
+              <tr>
+                <td>PatchSafetyReviewer</td>
+                <td>Blocks risky patch behavior before application</td>
+                <td>Approved, blocked, risk level, reasons</td>
+              </tr>
+              <tr>
+                <td>Isolated verifier</td>
+                <td>Applies patch away from the original task and reruns command</td>
+                <td>Verification command, return code, score, transcript</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-          <label for="task-select">Benchmark Task</label>
-          <select id="task-select"></select>
+      <section id="benchmark" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Controlled Benchmark</p>
+          <h2>Ten focused scientific-code failures for component-level evaluation</h2>
+        </div>
+        <p class="section-copy">
+          The internal benchmark is intentionally small and inspectable. It is
+          used to test whether each component in the agent pipeline behaves as
+          expected, not to claim public benchmark performance.
+        </p>
+        <div class="benchmark-grid">
+          <article class="mini-card"><strong>tensor shape</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>dtype mismatch</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>device mismatch</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>loss input</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>collate function</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>config key</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>entrypoint</strong><span>source patch</span></article>
+          <article class="mini-card"><strong>label shape</strong><span>source patch</span></article>
+          <article class="mini-card env"><strong>missing module</strong><span>EnvDoctor</span></article>
+          <article class="mini-card env"><strong>missing file</strong><span>EnvDoctor</span></article>
+        </div>
+        <div class="figure-grid triple">
+          <figure class="panel">
+            <img src="/assets/figures/fig7_failure_taxonomy_pie.png" alt="Failure taxonomy" />
+            <figcaption>Failure taxonomy across internal controlled tasks.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig11_task_heatmap.png" alt="Task heatmap" />
+            <figcaption>Task-level evidence heatmap for diagnosis and repair artifacts.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig12_task_mode_comparison.png" alt="Task mode comparison" />
+            <figcaption>Task and mode comparison for internal component evaluation.</figcaption>
+          </figure>
+        </div>
+      </section>
 
-          <label for="mode-select">Mode</label>
-          <select id="mode-select">
-            <option value="diagnosis">Diagnosis only</option>
-            <option value="repair">Repair with review</option>
-          </select>
+      <section id="memory" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">FailureMemory Retrieval</p>
+          <h2>Failures are stored as reusable, searchable agent memory</h2>
+        </div>
+        <div class="two-column">
+          <p>
+            FailureMemory is the central intermediate representation in
+            SciCodePilot. It stores the failure type, evidence, root-cause
+            hypothesis, repair action, command context, and verification result
+            so future failures can retrieve similar cases.
+          </p>
+          <p>
+            The current retrieval evaluation is deterministic and scoped to the
+            internal benchmark. It demonstrates that the memory layer can
+            recover matching cases and build in-context examples, not that the
+            system has completed large-scale semantic retrieval.
+          </p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><strong>10</strong><span>memory records</span></div>
+          <div class="stat"><strong>10/10</strong><span>top-1 self match</span></div>
+          <div class="stat"><strong>10/10</strong><span>top-3 self match</span></div>
+          <div class="stat"><strong>10/10</strong><span>error-type match</span></div>
+        </div>
+        <div class="table-card panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Memory Field</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>error_type</td>
+                <td>Supports routing and matching by failure family.</td>
+              </tr>
+              <tr>
+                <td>evidence</td>
+                <td>Keeps traceback and stderr lines that justify diagnosis.</td>
+              </tr>
+              <tr>
+                <td>root_cause_hypothesis</td>
+                <td>Makes the agent's interpretation auditable by humans.</td>
+              </tr>
+              <tr>
+                <td>repair_action</td>
+                <td>Records the intended repair direction before patching.</td>
+              </tr>
+              <tr>
+                <td>verification_result</td>
+                <td>Closes the feedback loop for future case-based repair.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-          <div class="button-row">
-            <button id="run-button" class="primary">Run</button>
-            <button id="confirm-button" class="warning" disabled>
-              Confirm Apply
-            </button>
-          </div>
+      <section id="llm" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">LLM Smoke Evidence</p>
+          <h2>Structured PatchPlan output is more reviewable than free-form repair text</h2>
+        </div>
+        <p class="section-copy">
+          The LLM smoke artifacts compare direct LLM repair, structured
+          PatchPlan generation, and retrieved-memory structured PatchPlan
+          generation. These runs are smoke evidence for output format and
+          reviewability; they are not reported as real-world repair performance.
+        </p>
+        <div class="stats-grid">
+          <div class="stat"><strong>30</strong><span>LLM smoke runs</span></div>
+          <div class="stat"><strong>10/10</strong><span>direct output valid</span></div>
+          <div class="stat"><strong>20/20</strong><span>structured JSON valid</span></div>
+          <div class="stat"><strong>20/20</strong><span>reviewable PatchPlans</span></div>
+        </div>
+        <div class="figure-grid triple">
+          <figure class="panel">
+            <img src="/assets/figures/fig2_llm_mode_radar.png" alt="LLM mode radar" />
+            <figcaption>Direct LLM vs structured PatchPlan vs memory-augmented PatchPlan.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig9_avg_response_length.png" alt="Average response length" />
+            <figcaption>Average response length by LLM output mode.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig13_response_distribution.png" alt="Response distribution" />
+            <figcaption>Response distribution across M30 LLM smoke runs.</figcaption>
+          </figure>
+        </div>
+      </section>
 
-          <div class="status-box">
-            <span class="label">Current Status</span>
-            <strong id="status-text">Ready.</strong>
-          </div>
+      <section id="results" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Evaluation Scope</p>
+          <h2>Internal component-level evidence, not public benchmark claims</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><strong>10</strong><span>controlled tasks</span></div>
+          <div class="stat"><strong>10/10</strong><span>diagnosis pass</span></div>
+          <div class="stat"><strong>8</strong><span>source patch tasks</span></div>
+          <div class="stat"><strong>2</strong><span>env/data routed tasks</span></div>
+        </div>
+        <div class="figure-grid">
+          <figure class="panel">
+            <img src="/assets/figures/fig1_m30_evidence_matrix.png" alt="Evidence matrix" />
+            <figcaption>M30 evidence matrix linking claims to concrete artifacts.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig6_evidence_volume.png" alt="Evidence volume" />
+            <figcaption>Evidence volume produced by reports, outputs, figures, and tables.</figcaption>
+          </figure>
+        </div>
+      </section>
 
-          <div class="task-card">
-            <span class="label">Selected Task</span>
-            <h3 id="task-name">Loading tasks...</h3>
-            <p id="task-meta">-</p>
-          </div>
-        </aside>
+      <section id="safety" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Safety and Ablation</p>
+          <h2>Repair is gated by review, confirmation, and isolated verification</h2>
+        </div>
+        <div class="two-column">
+          <p>
+            PatchSafetyReviewer checks risky patterns such as path traversal,
+            dependency installation, shell-command edits, benchmark mutation,
+            and overly broad multi-file changes before any patch is applied.
+          </p>
+          <p>
+            The ablation assets separate diagnosis-only, repair without apply,
+            full rule-based repair, mock LLM repair, and safety stress cases so
+            the report can explain which component contributes to reliability.
+          </p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><strong>10</strong><span>safety stress cases</span></div>
+          <div class="stat"><strong>8</strong><span>patch reviews</span></div>
+          <div class="stat"><strong>8</strong><span>verified source repairs</span></div>
+          <div class="stat"><strong>0</strong><span>original repo mutations</span></div>
+        </div>
+        <div class="table-card panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Risk class</th>
+                <th>Expected system behavior</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Path traversal</td>
+                <td>Block patches that attempt to write outside the allowed workspace.</td>
+              </tr>
+              <tr>
+                <td>Dependency installation</td>
+                <td>Route to EnvRepairPlan instead of silently running package installs.</td>
+              </tr>
+              <tr>
+                <td>Missing data</td>
+                <td>Report data/path issue instead of fabricating files.</td>
+              </tr>
+              <tr>
+                <td>Benchmark mutation</td>
+                <td>Reject changes that alter expected benchmark criteria.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        <section class="main-panel">
-          <section class="panel stage-panel">
-            <div class="section-title">
-              <h2>Agent Pipeline</h2>
-              <span id="run-mode-badge" class="badge neutral">diagnosis</span>
+      <section id="comparison" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Positioning</p>
+          <h2>Architectural comparison without claiming public benchmark superiority</h2>
+        </div>
+        <p class="section-copy">
+          SciCodePilot is positioned as a controlled, auditable repair
+          prototype. It should not be described as outperforming SWE-agent,
+          OpenHands, AutoCodeRover, or mini-swe-agent on public benchmarks.
+          The comparison focuses on design dimensions: memory, routing,
+          structured planning, safety review, and reproducibility evidence.
+        </p>
+        <div class="figure-grid triple">
+          <figure class="panel">
+            <img src="/assets/figures/fig3_agent_comparison_radar.png" alt="Agent comparison radar" />
+            <figcaption>Agent capability positioning across reviewability and safety dimensions.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig4_miniswe_workflow.png" alt="mini-swe-agent workflow" />
+            <figcaption>One-case mini-swe-agent comparison artifact used for discussion only.</figcaption>
+          </figure>
+          <figure class="panel">
+            <img src="/assets/figures/fig8_agent_strengths.png" alt="Agent strengths" />
+            <figcaption>Qualitative strengths comparison for final defense positioning.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="frontend" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Frontend Interfaces</p>
+          <h2>Two frontends consume the same backend event stream</h2>
+        </div>
+        <div class="interface-grid">
+          <article class="interface-card panel">
+            <span>Web Homepage + Demo</span>
+            <h3>FastAPI + SSE</h3>
+            <p>
+              The browser homepage presents the research narrative, figures,
+              method, results, and live demo. It streams backend events through
+              Server-Sent Events and updates the pipeline, cards, and timeline.
+            </p>
+            <code>python scripts/run_web_demo.py</code>
+          </article>
+          <article class="interface-card panel">
+            <span>Textual Terminal UI</span>
+            <h3>Developer-facing reference frontend</h3>
+            <p>
+              The Textual app remains as a terminal demo and implementation
+              reference. It proved that frontend code could consume
+              BackendController events before the web homepage was added.
+            </p>
+            <code>python scripts/run_textual_app.py</code>
+          </article>
+        </div>
+        <div class="table-card panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Frontend</th>
+                <th>Audience</th>
+                <th>Strength</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Web homepage</td>
+                <td>Classroom demo, report readers, final defense</td>
+                <td>Research-project presentation with figures and live event stream.</td>
+              </tr>
+              <tr>
+                <td>Textual UI</td>
+                <td>Developers and backup demo</td>
+                <td>Compact terminal interface for validating backend event flow.</td>
+              </tr>
+              <tr>
+                <td>Transcript export</td>
+                <td>Report and reproducibility review</td>
+                <td>Copyable evidence under <code>outputs/frontend_logs/</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="demo" class="content-section demo-section">
+        <div class="section-heading">
+          <p class="eyebrow">Interactive Demo</p>
+          <h2>Run the backend event stream in the browser</h2>
+        </div>
+
+        <section class="demo-workspace">
+          <aside class="control-panel panel">
+            <h3>Demo Control</h3>
+
+            <label for="task-select">Benchmark Task</label>
+            <select id="task-select"></select>
+
+            <label for="mode-select">Mode</label>
+            <select id="mode-select">
+              <option value="diagnosis">Diagnosis only</option>
+              <option value="repair">Repair with review</option>
+            </select>
+
+            <div class="button-row">
+              <button id="run-button" class="primary">Run</button>
+              <button id="confirm-button" class="warning" disabled>
+                Confirm Apply
+              </button>
             </div>
-            <div id="stage-track" class="stage-track"></div>
-          </section>
 
-          <section class="cards-grid">
-            <article class="panel result-card" id="failure-card">
-              <div class="section-title">
-                <h2>FailureMemory</h2>
-                <span class="badge neutral" id="failure-badge">waiting</span>
-              </div>
-              <dl>
-                <dt>Error Type</dt>
-                <dd id="error-type">-</dd>
-                <dt>Summary</dt>
-                <dd id="error-summary">No failure analyzed yet.</dd>
-                <dt>Evidence</dt>
-                <dd><ul id="error-evidence"></ul></dd>
-                <dt>Root Cause Hypothesis</dt>
-                <dd id="root-cause">-</dd>
-                <dt>Repair Action</dt>
-                <dd id="repair-action">-</dd>
-              </dl>
-            </article>
-
-            <article class="panel result-card" id="patch-card">
-              <div class="section-title">
-                <h2>PatchPlan</h2>
-                <span class="badge neutral" id="patch-badge">waiting</span>
-              </div>
-              <dl>
-                <dt>Target File</dt>
-                <dd id="patch-target">-</dd>
-                <dt>Confidence</dt>
-                <dd id="patch-confidence">-</dd>
-                <dt>Proposed Change</dt>
-                <dd id="patch-change">-</dd>
-              </dl>
-              <pre id="patch-diff" class="diff-block">No patch proposed yet.</pre>
-            </article>
-
-            <article class="panel result-card" id="review-card">
-              <div class="section-title">
-                <h2>Safety Review</h2>
-                <span class="badge neutral" id="review-badge">waiting</span>
-              </div>
-              <dl>
-                <dt>Approved</dt>
-                <dd id="review-approved">-</dd>
-                <dt>Blocked</dt>
-                <dd id="review-blocked">-</dd>
-                <dt>Risk Level</dt>
-                <dd id="review-risk">-</dd>
-                <dt>Reasons</dt>
-                <dd><ul id="review-reasons"></ul></dd>
-                <dt>Warnings</dt>
-                <dd><ul id="review-warnings"></ul></dd>
-              </dl>
-            </article>
-
-            <article class="panel result-card" id="verify-card">
-              <div class="section-title">
-                <h2>Verification</h2>
-                <span class="badge neutral" id="verify-badge">waiting</span>
-              </div>
-              <dl>
-                <dt>Command</dt>
-                <dd id="verify-command">-</dd>
-                <dt>Return Code</dt>
-                <dd id="verify-return-code">-</dd>
-                <dt>Success</dt>
-                <dd id="verify-success">-</dd>
-                <dt>Final Status</dt>
-                <dd id="final-status">-</dd>
-                <dt>Summary</dt>
-                <dd id="final-summary">-</dd>
-              </dl>
-            </article>
-          </section>
-
-          <section class="panel transcript-panel">
-            <div class="section-title">
-              <h2>Timeline / Event Stream</h2>
-              <button id="copy-transcript-button" class="ghost">Copy</button>
+            <div class="status-box">
+              <span class="label">Current Status</span>
+              <strong id="status-text">Ready.</strong>
             </div>
-            <div id="transcript-note" class="transcript-note">
-              Transcript will be saved under outputs/frontend_logs.
+
+            <div class="task-card">
+              <span class="label">Selected Task</span>
+              <h3 id="task-name">Loading tasks...</h3>
+              <p id="task-meta">-</p>
             </div>
-            <ol id="timeline" class="timeline"></ol>
+          </aside>
+
+          <section class="demo-main">
+            <section class="panel stage-panel">
+              <div class="section-title">
+                <h3>Agent Pipeline</h3>
+                <span id="run-mode-badge" class="badge neutral">diagnosis</span>
+              </div>
+              <div id="stage-track" class="stage-track"></div>
+            </section>
+
+            <section class="cards-grid">
+              <article class="panel result-card" id="failure-card">
+                <div class="section-title">
+                  <h3>FailureMemory</h3>
+                  <span class="badge neutral" id="failure-badge">waiting</span>
+                </div>
+                <dl>
+                  <dt>Error Type</dt>
+                  <dd id="error-type">-</dd>
+                  <dt>Summary</dt>
+                  <dd id="error-summary">No failure analyzed yet.</dd>
+                  <dt>Evidence</dt>
+                  <dd><ul id="error-evidence"></ul></dd>
+                  <dt>Root Cause Hypothesis</dt>
+                  <dd id="root-cause">-</dd>
+                  <dt>Repair Action</dt>
+                  <dd id="repair-action">-</dd>
+                </dl>
+              </article>
+
+              <article class="panel result-card" id="patch-card">
+                <div class="section-title">
+                  <h3>PatchPlan</h3>
+                  <span class="badge neutral" id="patch-badge">waiting</span>
+                </div>
+                <dl>
+                  <dt>Target File</dt>
+                  <dd id="patch-target">-</dd>
+                  <dt>Confidence</dt>
+                  <dd id="patch-confidence">-</dd>
+                  <dt>Proposed Change</dt>
+                  <dd id="patch-change">-</dd>
+                </dl>
+                <pre id="patch-diff" class="diff-block">No patch proposed yet.</pre>
+              </article>
+
+              <article class="panel result-card" id="review-card">
+                <div class="section-title">
+                  <h3>Safety Review</h3>
+                  <span class="badge neutral" id="review-badge">waiting</span>
+                </div>
+                <dl>
+                  <dt>Approved</dt>
+                  <dd id="review-approved">-</dd>
+                  <dt>Blocked</dt>
+                  <dd id="review-blocked">-</dd>
+                  <dt>Risk Level</dt>
+                  <dd id="review-risk">-</dd>
+                  <dt>Reasons</dt>
+                  <dd><ul id="review-reasons"></ul></dd>
+                  <dt>Warnings</dt>
+                  <dd><ul id="review-warnings"></ul></dd>
+                </dl>
+              </article>
+
+              <article class="panel result-card" id="verify-card">
+                <div class="section-title">
+                  <h3>Verification</h3>
+                  <span class="badge neutral" id="verify-badge">waiting</span>
+                </div>
+                <dl>
+                  <dt>Command</dt>
+                  <dd id="verify-command">-</dd>
+                  <dt>Return Code</dt>
+                  <dd id="verify-return-code">-</dd>
+                  <dt>Success</dt>
+                  <dd id="verify-success">-</dd>
+                  <dt>Final Status</dt>
+                  <dd id="final-status">-</dd>
+                  <dt>Summary</dt>
+                  <dd id="final-summary">-</dd>
+                </dl>
+              </article>
+            </section>
+
+            <section class="panel transcript-panel">
+              <div class="section-title">
+                <h3>Timeline / Event Stream</h3>
+                <button id="copy-transcript-button" class="ghost">Copy</button>
+              </div>
+              <div id="transcript-note" class="transcript-note">
+                Transcript will be saved under outputs/frontend_logs.
+              </div>
+              <ol id="timeline" class="timeline"></ol>
+            </section>
           </section>
         </section>
       </section>
+
+      <section id="external" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">External Repository Interface</p>
+          <h2>A smoke entry point beyond built-in benchmark tasks</h2>
+        </div>
+        <div class="command-card panel">
+          <code>python scripts/run_external_repo_smoke.py --repo-path &lt;local_repo&gt; --command "pytest -q" --mode diagnosis</code>
+        </div>
+        <p class="muted-copy">
+          The external smoke interface copies a local repository into an
+          isolated workspace, runs the provided command, and writes
+          <code>summary.md</code> and <code>summary.json</code>. It does not
+          mutate the original repository and should not be reported as public
+          benchmark performance.
+        </p>
+      </section>
+
+      <section id="run" class="content-section">
+        <div class="section-heading">
+          <p class="eyebrow">Run Locally</p>
+          <h2>Clone, install, and launch the homepage demo</h2>
+        </div>
+        <div class="command-grid">
+          <div class="command-card panel">
+            <span>Install</span>
+            <code>pip install -r requirements.txt</code>
+          </div>
+          <div class="command-card panel">
+            <span>Launch</span>
+            <code>python scripts/run_web_demo.py</code>
+          </div>
+          <div class="command-card panel">
+            <span>Open</span>
+            <code>http://127.0.0.1:8000</code>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <div id="image-modal" class="image-modal" aria-hidden="true">
+      <button id="image-modal-close" class="modal-close" type="button">Close</button>
+      <figure class="modal-figure">
+        <img id="image-modal-img" src="" alt="" />
+        <figcaption id="image-modal-caption"></figcaption>
+      </figure>
+    </div>
 
     <script src="/static/app.js"></script>
   </body>
