@@ -254,3 +254,126 @@ def test_patch_planner_does_not_modify_file() -> None:
 
     updated_content = train_path.read_text(encoding="utf-8")
     assert updated_content == original_content
+
+
+def test_patch_planner_generates_external_assertion_none_guard(tmp_path) -> None:
+    repo_dir = tmp_path / "external_repo"
+    repo_dir.mkdir()
+    sample_path = repo_dir / "sample.py"
+    sample_path.write_text(
+        "def cli_bool_option(params, command_option, param):\n"
+        "    param = params.get(param)\n"
+        "    assert isinstance(param, bool)\n"
+        "    return [\"x\"] if param else []\n",
+        encoding="utf-8",
+    )
+    parsed_error = ParsedError(
+        error_type="external_assertion_failure",
+        summary="External AssertionError triggered while running the user-provided command.",
+        evidence=["assert isinstance(param, bool)", "AssertionError"],
+        exception_type="AssertionError",
+        file_path=str(sample_path),
+        line_number=3,
+        function_name="cli_bool_option",
+        assertion_expr="assert isinstance(param, bool)",
+    )
+
+    plan = PatchPlanner().create_plan(
+        task_id="external_repo_smoke",
+        repo_dir=str(repo_dir),
+        parsed_error=parsed_error,
+        failure_memory=make_memory(parsed_error),
+    )
+
+    assert plan is not None
+    assert plan.error_type == "external_assertion_failure"
+    assert plan.target_file == "sample.py"
+    assert "+    if param is None:" in plan.unified_diff
+    assert "+        return []" in plan.unified_diff
+    assert "params.get" in plan.rationale
+
+
+def test_patch_planner_generates_external_type_error_str_to_int_plan(tmp_path) -> None:
+    repo_dir = tmp_path / "external_repo"
+    repo_dir.mkdir()
+    sample_path = repo_dir / "sample.py"
+    sample_path.write_text(
+        "import re\n"
+        "compat_str = str\n"
+        "\n"
+        "def str_to_int(int_str):\n"
+        "    if int_str is None:\n"
+        "        return None\n"
+        "    int_str = re.sub(r'[,\\\\.]', '', int_str)\n"
+        "    return int(int_str)\n",
+        encoding="utf-8",
+    )
+    parsed_error = ParsedError(
+        error_type="external_type_error",
+        summary="External TypeError triggered while running the user-provided command.",
+        evidence=["TypeError: expected string or bytes-like object, got 'int'"],
+        exception_type="TypeError",
+        error_message="expected string or bytes-like object, got 'int'",
+        file_path=str(sample_path),
+        line_number=7,
+        function_name="str_to_int",
+        command="python -c \"from sample import str_to_int; print(str_to_int(123))\"",
+    )
+
+    plan = PatchPlanner().create_plan(
+        task_id="external_repo_smoke",
+        repo_dir=str(repo_dir),
+        parsed_error=parsed_error,
+        failure_memory=make_memory(parsed_error),
+    )
+
+    assert plan is not None
+    assert plan.error_type == "external_type_error"
+    assert plan.target_file == "sample.py"
+    assert "-    if int_str is None:" in plan.unified_diff
+    assert "-        return None" in plan.unified_diff
+    assert "+    if not isinstance(int_str, compat_str):" in plan.unified_diff
+    assert "+        return int_str" in plan.unified_diff
+
+
+def test_patch_planner_generates_unified_strdate_none_plan(tmp_path) -> None:
+    repo_dir = tmp_path / "external_repo"
+    repo_dir.mkdir()
+    sample_path = repo_dir / "sample.py"
+    sample_path.write_text(
+        "def compat_str(x):\n"
+        "    return str(x)\n"
+        "\n"
+        "def unified_strdate(date_str):\n"
+        "    upload_date = None\n"
+        "    return compat_str(upload_date)\n",
+        encoding="utf-8",
+    )
+    parsed_error = ParsedError(
+        error_type="external_assertion_failure",
+        summary="External AssertionError triggered while running the user-provided command.",
+        evidence=["AssertionError"],
+        exception_type="AssertionError",
+        assertion_expr="assert unified_strdate('not-a-date') is None",
+        assertion_location="command",
+        target_symbol="unified_strdate",
+        expected_value="None",
+        command=(
+            "python -c \"from sample import unified_strdate; "
+            "assert unified_strdate('not-a-date') is None\""
+        ),
+    )
+
+    plan = PatchPlanner().create_plan(
+        task_id="external_repo_smoke",
+        repo_dir=str(repo_dir),
+        parsed_error=parsed_error,
+        failure_memory=make_memory(parsed_error),
+    )
+
+    assert plan is not None
+    assert plan.error_type == "external_assertion_failure"
+    assert plan.target_file == "sample.py"
+    assert "-    return compat_str(upload_date)" in plan.unified_diff
+    assert "+    if upload_date is not None:" in plan.unified_diff
+    assert "+        return compat_str(upload_date)" in plan.unified_diff

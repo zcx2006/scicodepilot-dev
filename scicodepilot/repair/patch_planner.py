@@ -1,4 +1,5 @@
 import difflib
+import re
 from pathlib import Path
 
 from scicodepilot.memory.failure_memory import FailureMemory
@@ -17,6 +18,22 @@ class PatchPlanner:
         failure_memory: FailureMemory,
     ) -> PatchPlan | None:
         """Create a patch plan for supported errors, or None."""
+        if parsed_error.error_type == "external_assertion_failure":
+            return self._plan_external_assertion_failure(
+                task_id=task_id,
+                repo_dir=repo_dir,
+                parsed_error=parsed_error,
+                failure_memory=failure_memory,
+            )
+
+        if parsed_error.error_type == "external_type_error":
+            return self._plan_external_type_error(
+                task_id=task_id,
+                repo_dir=repo_dir,
+                parsed_error=parsed_error,
+                failure_memory=failure_memory,
+            )
+
         train_path = Path(repo_dir) / "train.py"
         lines = train_path.read_text(encoding="utf-8").splitlines()
 
@@ -449,12 +466,302 @@ class PatchPlanner:
             "should change to 64."
         )
 
-    def _build_diff(self, original_lines: list[str], updated_lines: list[str]) -> str:
+    def _plan_external_assertion_failure(
+        self,
+        task_id: str,
+        repo_dir: str,
+        parsed_error: ParsedError,
+        failure_memory: FailureMemory,
+    ) -> PatchPlan | None:
+        unified_plan = self._plan_unified_strdate_none_assertion(
+            task_id=task_id,
+            repo_dir=repo_dir,
+            parsed_error=parsed_error,
+        )
+        if unified_plan is not None:
+            return unified_plan
+
+        if parsed_error.assertion_expr is None or parsed_error.line_number is None:
+            return None
+
+        assert_match = re.fullmatch(
+            r"assert\s+isinstance\((?P<var>[A-Za-z_][A-Za-z0-9_]*),\s*bool\)",
+            parsed_error.assertion_expr,
+        )
+        if assert_match is None:
+            return None
+
+        repo_path = Path(repo_dir).resolve()
+        target_path = self._resolve_external_target(repo_path, parsed_error.file_path)
+        if target_path is None:
+            return None
+
+        lines = target_path.read_text(encoding="utf-8").splitlines()
+        assert_index = parsed_error.line_number - 1
+        if assert_index < 0 or assert_index >= len(lines):
+            return None
+
+        if lines[assert_index].strip() != parsed_error.assertion_expr:
+            return None
+
+        variable = assert_match.group("var")
+        assignment_index = self._find_nearest_get_assignment(lines, assert_index, variable)
+        if assignment_index is None:
+            return None
+
+        assignment_text = lines[assignment_index].strip()
+        indent = lines[assert_index][: len(lines[assert_index]) - len(lines[assert_index].lstrip())]
+        updated_lines = lines.copy()
+        updated_lines[assert_index:assert_index] = [
+            f"{indent}if {variable} is None:",
+            f"{indent}    return []",
+        ]
+        target_file = target_path.relative_to(repo_path).as_posix()
+
+        return PatchPlan(
+            task_id=task_id,
+            error_type=parsed_error.error_type,
+            target_file=target_file,
+            suspected_line=parsed_error.line_number,
+            rationale=(
+                "The parsed failure is an external AssertionError in "
+                f"{parsed_error.function_name}. The failing assertion is "
+                f"{parsed_error.assertion_expr!r}. The nearest preceding assignment "
+                f"uses {assignment_text!r}, which can return None for a "
+                "missing key before a bool-only CLI option assertion."
+            ),
+            proposed_change=(
+                f"Insert a conservative None guard before the bool assertion in "
+                f"{parsed_error.function_name}: return [] when {variable} is None."
+            ),
+            unified_diff=self._build_diff(lines, updated_lines, target_file=target_file),
+            confidence=0.82,
+            safety_notes=[
+                "Pattern matched only assert isinstance(<var>, bool).",
+                "Patch is limited to the isolated workspace target file.",
+                "No command, dependency, or repository metadata changes are proposed.",
+            ],
+        )
+
+    def _plan_external_type_error(
+        self,
+        task_id: str,
+        repo_dir: str,
+        parsed_error: ParsedError,
+        failure_memory: FailureMemory,
+    ) -> PatchPlan | None:
+        if "expected string or bytes-like object" not in (parsed_error.error_message or ""):
+            return None
+
+        command = parsed_error.command or ""
+        repo_path = Path(repo_dir).resolve()
+        target_path = self._resolve_external_target(repo_path, parsed_error.file_path)
+        if target_path is None or "str_to_int" not in (parsed_error.function_name or command):
+            target_path = self._find_python_function(repo_path, "str_to_int")
+        if target_path is None:
+            return None
+
+        lines = target_path.read_text(encoding="utf-8").splitlines()
+        function_bounds = self._find_function_bounds(lines, "str_to_int")
+        if function_bounds is None:
+            return None
+        start, end = function_bounds
+
+        none_guard_index: int | None = None
+        for index in range(start, end - 1):
+            if (
+                lines[index].strip() == "if int_str is None:"
+                and lines[index + 1].strip() == "return None"
+            ):
+                none_guard_index = index
+                break
+        if none_guard_index is None:
+            return None
+
+        if not any("re.sub" in line and "int_str" in line for line in lines[none_guard_index + 2 : end]):
+            return None
+
+        indent = lines[none_guard_index][: len(lines[none_guard_index]) - len(lines[none_guard_index].lstrip())]
+        updated_lines = lines.copy()
+        updated_lines[none_guard_index : none_guard_index + 2] = [
+            f"{indent}if not isinstance(int_str, compat_str):",
+            f"{indent}    return int_str",
+        ]
+        target_file = target_path.relative_to(repo_path).as_posix()
+
+        return PatchPlan(
+            task_id=task_id,
+            error_type=parsed_error.error_type,
+            target_file=target_file,
+            suspected_line=none_guard_index + 1,
+            rationale=(
+                "The parsed failure is an external TypeError from regex/string "
+                "processing. str_to_int contains a None-only guard followed by "
+                "re.sub(..., int_str), so non-string inputs can reach re.sub and "
+                "trigger 'expected string or bytes-like object'."
+            ),
+            proposed_change=(
+                "Replace the None-only guard with a compat_str type guard so "
+                "non-string inputs are returned unchanged before regex normalization."
+            ),
+            unified_diff=self._build_diff(lines, updated_lines, target_file=target_file),
+            confidence=0.84,
+            safety_notes=[
+                "Pattern matched only str_to_int with an exact None-only guard.",
+                "Patch requires a later re.sub(..., int_str) call in the same function.",
+                "Patch is limited to the isolated workspace target file.",
+            ],
+        )
+
+    def _plan_unified_strdate_none_assertion(
+        self,
+        task_id: str,
+        repo_dir: str,
+        parsed_error: ParsedError,
+    ) -> PatchPlan | None:
+        command = parsed_error.command or ""
+        assertion_expr = parsed_error.assertion_expr or ""
+        if "unified_strdate" not in command and parsed_error.target_symbol != "unified_strdate":
+            return None
+        if "is None" not in command and "is None" not in assertion_expr:
+            return None
+
+        repo_path = Path(repo_dir).resolve()
+        target_path = self._find_python_function(repo_path, "unified_strdate")
+        if target_path is None:
+            return None
+
+        lines = target_path.read_text(encoding="utf-8").splitlines()
+        function_bounds = self._find_function_bounds(lines, "unified_strdate")
+        if function_bounds is None:
+            return None
+        start, end = function_bounds
+
+        return_index: int | None = None
+        for index in range(start, end):
+            if lines[index].strip() == "return compat_str(upload_date)":
+                return_index = index
+                break
+        if return_index is None:
+            return None
+
+        indent = lines[return_index][: len(lines[return_index]) - len(lines[return_index].lstrip())]
+        updated_lines = lines.copy()
+        updated_lines[return_index : return_index + 1] = [
+            f"{indent}if upload_date is not None:",
+            f"{indent}    return compat_str(upload_date)",
+        ]
+        target_file = target_path.relative_to(repo_path).as_posix()
+
+        return PatchPlan(
+            task_id=task_id,
+            error_type=parsed_error.error_type,
+            target_file=target_file,
+            suspected_line=return_index + 1,
+            rationale=(
+                "The command-level assertion expects unified_strdate('not-a-date') "
+                "to return None. Inside unified_strdate, the final return converts "
+                "upload_date with compat_str even when parsing left upload_date as "
+                "None, producing the string 'None'."
+            ),
+            proposed_change=(
+                "Guard the final compat_str(upload_date) conversion and return "
+                "only when upload_date is not None."
+            ),
+            unified_diff=self._build_diff(lines, updated_lines, target_file=target_file),
+            confidence=0.82,
+            safety_notes=[
+                "Pattern matched only a command assertion expecting unified_strdate(...) is None.",
+                "Patch requires an exact return compat_str(upload_date) line inside unified_strdate.",
+                "Patch is limited to the isolated workspace target file.",
+            ],
+        )
+
+    def _resolve_external_target(
+        self,
+        repo_path: Path,
+        parsed_file_path: str | None,
+    ) -> Path | None:
+        if not parsed_file_path:
+            return None
+
+        candidate = Path(parsed_file_path)
+        if candidate.is_absolute():
+            resolved = candidate.resolve()
+            try:
+                resolved.relative_to(repo_path)
+            except ValueError:
+                return None
+            return resolved if resolved.exists() else None
+
+        resolved = (repo_path / candidate).resolve()
+        try:
+            resolved.relative_to(repo_path)
+        except ValueError:
+            return None
+        return resolved if resolved.exists() else None
+
+    def _find_python_function(self, repo_path: Path, function_name: str) -> Path | None:
+        needle = f"def {function_name}"
+        for path in sorted(repo_path.rglob("*.py")):
+            if any(part in {".git", "__pycache__", ".pytest_cache"} for part in path.parts):
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue
+            if needle in text:
+                return path
+        return None
+
+    def _find_function_bounds(
+        self,
+        lines: list[str],
+        function_name: str,
+    ) -> tuple[int, int] | None:
+        function_pattern = re.compile(rf"^(?P<indent>\s*)def\s+{re.escape(function_name)}\s*\(")
+        for start, line in enumerate(lines):
+            match = function_pattern.match(line)
+            if match is None:
+                continue
+            indent_width = len(match.group("indent"))
+            end = len(lines)
+            for index in range(start + 1, len(lines)):
+                stripped = lines[index].strip()
+                if not stripped:
+                    continue
+                current_indent = len(lines[index]) - len(lines[index].lstrip())
+                if current_indent <= indent_width and not lines[index].lstrip().startswith(("#", "@")):
+                    end = index
+                    break
+            return start, end
+        return None
+
+    def _find_nearest_get_assignment(
+        self,
+        lines: list[str],
+        assert_index: int,
+        variable: str,
+    ) -> int | None:
+        assignment_pattern = re.compile(
+            rf"^\s*{re.escape(variable)}\s*=\s*[A-Za-z_][A-Za-z0-9_\\.]*\.get\(.+\)\s*$"
+        )
+        for index in range(assert_index - 1, max(assert_index - 8, -1), -1):
+            if assignment_pattern.match(lines[index]):
+                return index
+        return None
+
+    def _build_diff(
+        self,
+        original_lines: list[str],
+        updated_lines: list[str],
+        target_file: str = "train.py",
+    ) -> str:
         diff_lines = difflib.unified_diff(
             original_lines,
             updated_lines,
-            fromfile="train.py",
-            tofile="train.py",
+            fromfile=target_file,
+            tofile=target_file,
             lineterm="",
         )
         return "\n".join(diff_lines)

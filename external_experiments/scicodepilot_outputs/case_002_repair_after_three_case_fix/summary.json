@@ -1,0 +1,117 @@
+{
+  "mode": "repair",
+  "repo_path": "/tmp/scicodepilot_case002_minimal",
+  "output_dir": "/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix",
+  "workspace_dir": "/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace",
+  "workspace_path": "/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "interpreter": "python",
+  "python_executable": "python",
+  "python_version": "Python 3.10.20",
+  "before_return_code": 1,
+  "after_return_code": 0,
+  "detected_failure_type": "external_type_error",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": true,
+  "patch_plan_generated": true,
+  "patch_applied": true,
+  "patch_diff": "--- sample.py\n+++ sample.py\n@@ -2,7 +2,7 @@\n compat_str = str\n \n def str_to_int(int_str):\n-    if int_str is None:\n-        return None\n+    if not isinstance(int_str, compat_str):\n+        return int_str\n     int_str = re.sub(r'[,\\\\.]', '', int_str)\n     return int(int_str)",
+  "final_status": "patch_success",
+  "command": {
+    "command": "python run_case.py",
+    "interpreter": "python",
+    "python_executable": "python",
+    "python_version": "Python 3.10.20",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace/run_case.py\", line 2, in <module>\n    print(str_to_int(123))\n  File \"/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace/sample.py\", line 7, in str_to_int\n    int_str = re.sub(r'[,\\\\.]', '', int_str)\n  File \"/home/zengl/miniconda3/envs/scicodepilot-dev/lib/python3.10/re.py\", line 209, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\nTypeError: expected string or bytes-like object\n"
+  },
+  "before_command": {
+    "command": "python run_case.py",
+    "interpreter": "python",
+    "python_executable": "python",
+    "python_version": "Python 3.10.20",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace/run_case.py\", line 2, in <module>\n    print(str_to_int(123))\n  File \"/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace/sample.py\", line 7, in str_to_int\n    int_str = re.sub(r'[,\\\\.]', '', int_str)\n  File \"/home/zengl/miniconda3/envs/scicodepilot-dev/lib/python3.10/re.py\", line 209, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\nTypeError: expected string or bytes-like object\n"
+  },
+  "after_command": {
+    "command": "python run_case.py",
+    "interpreter": "python",
+    "python_executable": "python",
+    "python_version": "Python 3.10.20",
+    "return_code": 0,
+    "success": true,
+    "stdout": "123\n",
+    "stderr": ""
+  },
+  "parsed_error": {
+    "error_type": "external_type_error",
+    "summary": "External TypeError triggered while running the user-provided command.",
+    "evidence": [
+      "int_str = re.sub(r'[,\\\\.]', '', int_str)",
+      "TypeError: expected string or bytes-like object"
+    ],
+    "exception_type": "TypeError",
+    "file_path": "/home/zengl/projects/SciCodePilot/external_experiments/scicodepilot_outputs/case_002_repair_after_three_case_fix/workspace/sample.py",
+    "line_number": 7,
+    "function_name": "str_to_int",
+    "assertion_expr": null,
+    "assertion_location": null,
+    "target_symbol": null,
+    "expected_value": null,
+    "error_message": "expected string or bytes-like object",
+    "failing_expression": "int_str = re.sub(r'[,\\\\.]', '', int_str)",
+    "interpreter": null,
+    "command": "python run_case.py",
+    "stderr_evidence": [
+      "int_str = re.sub(r'[,\\\\.]', '', int_str)",
+      "TypeError: expected string or bytes-like object"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "external_type_error",
+    "evidence": [
+      "int_str = re.sub(r'[,\\\\.]', '', int_str)",
+      "TypeError: expected string or bytes-like object"
+    ],
+    "root_cause_hypothesis": "External TypeError triggered because a non-string input reached string/regex processing. str_to_int accepts an int input, but the implementation only handles None specially and then passes int_str into re.sub, which expects a string or bytes-like object.",
+    "repair_action": "Guard non-string inputs before regex normalization. If the input is not compat_str, return it unchanged."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison.",
+  "repair_plan": {
+    "plan_type": "PatchPlan",
+    "patch_plan": {
+      "task_id": "external_repo_smoke",
+      "error_type": "external_type_error",
+      "target_file": "sample.py",
+      "suspected_line": 5,
+      "rationale": "The parsed failure is an external TypeError from regex/string processing. str_to_int contains a None-only guard followed by re.sub(..., int_str), so non-string inputs can reach re.sub and trigger 'expected string or bytes-like object'.",
+      "proposed_change": "Replace the None-only guard with a compat_str type guard so non-string inputs are returned unchanged before regex normalization.",
+      "unified_diff": "--- sample.py\n+++ sample.py\n@@ -2,7 +2,7 @@\n compat_str = str\n \n def str_to_int(int_str):\n-    if int_str is None:\n-        return None\n+    if not isinstance(int_str, compat_str):\n+        return int_str\n     int_str = re.sub(r'[,\\\\.]', '', int_str)\n     return int(int_str)",
+      "confidence": 0.84,
+      "safety_notes": [
+        "Pattern matched only str_to_int with an exact None-only guard.",
+        "Patch requires a later re.sub(..., int_str) call in the same function.",
+        "Patch is limited to the isolated workspace target file."
+      ]
+    },
+    "patch_review": {
+      "task_id": "external_repo_smoke",
+      "error_type": "external_type_error",
+      "target_file": "sample.py",
+      "approved": true,
+      "blocked": false,
+      "risk_level": "low",
+      "reasons": [
+        "No blocking safety risks detected."
+      ],
+      "warnings": [],
+      "reviewer": "rule_based_patch_safety_reviewer"
+    },
+    "note": "Patch was reviewed, approved, and applied only inside the isolated workspace."
+  }
+}

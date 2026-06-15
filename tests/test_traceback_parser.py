@@ -112,3 +112,72 @@ def test_parse_unknown_error_returns_none() -> None:
     )
 
     assert parsed_error is None
+
+
+def test_parse_external_assertion_error_traceback() -> None:
+    stderr_lines = [
+        "Traceback (most recent call last):",
+        '  File "<string>", line 1, in <module>',
+        '  File "/tmp/workspace/youtube_dl/utils.py", line 2133, in cli_bool_option',
+        "    assert isinstance(param, bool)",
+        "AssertionError",
+    ]
+
+    parsed_error = TracebackParser().parse(stderr_lines)
+
+    assert parsed_error is not None
+    assert parsed_error.error_type == "external_assertion_failure"
+    assert parsed_error.exception_type == "AssertionError"
+    assert parsed_error.assertion_expr is not None
+    assert "assert isinstance(param, bool)" in parsed_error.assertion_expr
+    assert parsed_error.function_name == "cli_bool_option"
+
+
+def test_parse_external_type_error_traceback() -> None:
+    stderr_lines = [
+        "Traceback (most recent call last):",
+        '  File "<string>", line 1, in <module>',
+        '  File "/tmp/workspace/sample.py", line 6, in str_to_int',
+        "    int_str = re.sub(r'[,\\.]+', '', int_str)",
+        '  File "/usr/lib/python3.11/re/__init__.py", line 185, in sub',
+        "TypeError: expected string or bytes-like object, got 'int'",
+    ]
+
+    parsed_error = TracebackParser().parse(stderr_lines)
+
+    assert parsed_error is not None
+    assert parsed_error.error_type == "external_type_error"
+    assert parsed_error.exception_type == "TypeError"
+    assert parsed_error.error_message is not None
+    assert "expected string or bytes-like object" in parsed_error.error_message
+    assert parsed_error.function_name == "str_to_int"
+
+
+def test_parse_command_level_assertion_error() -> None:
+    command = (
+        "python -c \"from sample import unified_strdate; "
+        "assert unified_strdate('not-a-date') is None\""
+    )
+    stderr_lines = [
+        "Traceback (most recent call last):",
+        '  File "<string>", line 1, in <module>',
+        "AssertionError",
+    ]
+
+    parsed_error = TracebackParser().parse(stderr_lines, command=command)
+
+    assert parsed_error is not None
+    assert parsed_error.error_type == "external_assertion_failure"
+    assert parsed_error.assertion_location == "command"
+    assert parsed_error.target_symbol == "unified_strdate"
+    assert parsed_error.expected_value == "None"
+
+
+def test_parse_external_pipes_env_failure() -> None:
+    parsed_error = TracebackParser().parse(
+        ["ModuleNotFoundError: No module named 'pipes'"]
+    )
+
+    assert parsed_error is not None
+    assert parsed_error.error_type == "external_env_failure"
+    assert parsed_error.exception_type == "ModuleNotFoundError"

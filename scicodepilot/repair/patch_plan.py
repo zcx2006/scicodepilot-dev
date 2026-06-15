@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class PatchPlan(BaseModel):
@@ -12,3 +12,4 @@ class PatchPlan(BaseModel):
     proposed_change: str
     unified_diff: str
     confidence: float
+    safety_notes: list[str] = Field(default_factory=list)

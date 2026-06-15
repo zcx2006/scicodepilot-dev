@@ -104,3 +104,37 @@ def test_patch_applier_does_not_modify_file_when_apply_fails(tmp_path) -> None:
 
     assert applied is False
     assert train_path.read_text(encoding="utf-8") == original_content
+
+
+def test_patch_applier_insertion_changes_only_workspace(tmp_path) -> None:
+    original_repo = tmp_path / "original"
+    workspace_repo = tmp_path / "workspace"
+    original_repo.mkdir()
+    workspace_repo.mkdir()
+    original_text = (
+        "def cli_bool_option(params, command_option, param):\n"
+        "    param = params.get(param)\n"
+        "    assert isinstance(param, bool)\n"
+        "    return [command_option] if param else []\n"
+    )
+    (original_repo / "sample.py").write_text(original_text, encoding="utf-8")
+    (workspace_repo / "sample.py").write_text(original_text, encoding="utf-8")
+    patch_plan = make_patch_plan(
+        "--- sample.py\n"
+        "+++ sample.py\n"
+        "@@ -1,4 +1,6 @@\n"
+        " def cli_bool_option(params, command_option, param):\n"
+        "     param = params.get(param)\n"
+        "+    if param is None:\n"
+        "+        return []\n"
+        "     assert isinstance(param, bool)\n"
+        "     return [command_option] if param else []",
+        target_file="sample.py",
+    )
+
+    applied = PatchApplier().apply(str(workspace_repo), patch_plan)
+
+    assert applied is True
+    assert (original_repo / "sample.py").read_text(encoding="utf-8") == original_text
+    workspace_text = (workspace_repo / "sample.py").read_text(encoding="utf-8")
+    assert "if param is None:" in workspace_text
