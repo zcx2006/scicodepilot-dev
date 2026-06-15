@@ -1,0 +1,2 @@
+case_id,source,project,bug_id,before_return_code,before_failure_type,after_failure_type,failure_memory_specialized,patch_plan_generated,patch_applied,after_return_code,original_repo_mutated,final_status,summary_path
+case_001,BugsInPy-derived external case,youtube-dl,17,1,unsupported_external_failure,external_assertion_failure,true,true,true,0,false,patch_success,external_experiments/scicodepilot_outputs/case_001_repair_after_backend_fix/summary.json

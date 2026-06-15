@@ -112,3 +112,22 @@ def test_parse_unknown_error_returns_none() -> None:
     )
 
     assert parsed_error is None
+
+
+def test_parse_external_assertion_error_traceback() -> None:
+    stderr_lines = [
+        "Traceback (most recent call last):",
+        '  File "<string>", line 1, in <module>',
+        '  File "/tmp/workspace/youtube_dl/utils.py", line 2133, in cli_bool_option',
+        "    assert isinstance(param, bool)",
+        "AssertionError",
+    ]
+
+    parsed_error = TracebackParser().parse(stderr_lines)
+
+    assert parsed_error is not None
+    assert parsed_error.error_type == "external_assertion_failure"
+    assert parsed_error.exception_type == "AssertionError"
+    assert parsed_error.assertion_expr is not None
+    assert "assert isinstance(param, bool)" in parsed_error.assertion_expr
+    assert parsed_error.function_name == "cli_bool_option"

@@ -18,6 +18,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from scicodepilot.env.env_doctor import EnvDoctor
 from scicodepilot.memory.failure_memory import FailureMemoryBuilder
+from scicodepilot.repair.patch_applier import PatchApplier
 from scicodepilot.repair.patch_planner import PatchPlanner
 from scicodepilot.review.patch_safety_reviewer import PatchSafetyReviewer
 from scicodepilot.tools.traceback_parser import ParsedError, TracebackParser
@@ -31,9 +32,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--command", required=True, help="Command to run in the copied workspace.")
     parser.add_argument(
         "--mode",
-        choices=["diagnosis", "repair-plan"],
+        choices=["diagnosis", "repair-plan", "repair"],
         default="diagnosis",
-        help="Run diagnosis only or non-applying repair planning.",
+        help="Run diagnosis, non-applying repair planning, or confirmed repair.",
     )
     parser.add_argument(
         "--copy-workspace",
@@ -44,6 +45,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         help="Output directory. Defaults to outputs/external_smoke/<timestamp>.",
+    )
+    parser.add_argument(
+        "--confirm-apply",
+        action="store_true",
+        help="Allow --mode repair to apply an approved patch in the copied workspace.",
     )
     return parser.parse_args()
 
@@ -88,10 +94,11 @@ def run_command(command: str, cwd: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
-def parse_failure(stderr: str, stdout: str) -> ParsedError:
+def parse_failure(stderr: str, stdout: str, command: str) -> ParsedError:
     stderr_lines = [line for line in stderr.splitlines() if line.strip()]
     parsed = TracebackParser().parse(stderr_lines)
     if parsed is not None:
+        parsed.command = command
         return parsed
 
     evidence_source = stderr_lines or [line for line in stdout.splitlines() if line.strip()]
@@ -103,6 +110,8 @@ def parse_failure(stderr: str, stdout: str) -> ParsedError:
             "does not have a specialized parser rule for this failure."
         ),
         evidence=evidence,
+        command=command,
+        stderr_evidence=evidence,
     )
 
 
@@ -160,6 +169,22 @@ def build_repair_plan(
     }
 
 
+def final_status(
+    before_return_code: int,
+    after_return_code: int | None,
+    detected_failure_type: str,
+    patch_plan_generated: bool,
+    patch_applied: bool,
+) -> str:
+    if before_return_code != 0 and patch_applied and after_return_code == 0:
+        return "patch_success"
+    if before_return_code != 0 and patch_plan_generated and not patch_applied:
+        return "repair_plan_only"
+    if detected_failure_type == "unsupported_external_failure":
+        return "unsupported_external_failure"
+    return "patch_failed"
+
+
 def build_summary(args: argparse.Namespace, output_dir: Path, workspace_dir: Path) -> dict[str, Any]:
     repo_path = Path(args.repo_path).resolve()
     if not repo_path.exists() or not repo_path.is_dir():
@@ -183,32 +208,102 @@ def build_summary(args: argparse.Namespace, output_dir: Path, workspace_dir: Pat
             evidence=[],
         )
     else:
-        parsed_error = parse_failure(result.stderr, result.stdout)
+        parsed_error = parse_failure(result.stderr, result.stdout, args.command)
 
     failure_memory = FailureMemoryBuilder().from_parsed_error(parsed_error)
+    failure_memory_dict = model_to_dict(failure_memory)
     summary: dict[str, Any] = {
         "mode": args.mode,
         "repo_path": str(repo_path),
         "output_dir": str(output_dir),
         "workspace_dir": str(workspace_dir),
+        "workspace_path": str(workspace_dir),
         "copy_workspace": True,
         "original_repo_mutated": False,
+        "before_return_code": result.returncode,
+        "after_return_code": None,
+        "detected_failure_type": parsed_error.error_type,
+        "failure_memory_generated": True,
+        "failure_memory_specialized": (
+            "has no specialized hypothesis" not in failure_memory.root_cause_hypothesis
+        ),
+        "patch_plan_generated": False,
+        "patch_applied": False,
+        "patch_diff": "",
+        "final_status": "no_failure" if result.returncode == 0 else "patch_failed",
         "command": command_record,
+        "before_command": command_record,
+        "after_command": None,
         "parsed_error": model_to_dict(parsed_error),
-        "failure_memory": model_to_dict(failure_memory),
+        "failure_memory": failure_memory_dict,
         "scope_note": (
             "External repo smoke interface only; not a public benchmark result "
             "and not a SOTA comparison."
         ),
     }
 
-    if args.mode == "repair-plan" and result.returncode != 0:
+    if args.mode in {"repair-plan", "repair"} and result.returncode != 0:
         summary["repair_plan"] = build_repair_plan(
             workspace_dir,
             parsed_error,
             failure_memory,
         )
-    elif args.mode == "repair-plan":
+        repair_plan = summary["repair_plan"]
+        patch_plan_generated = repair_plan["plan_type"] == "PatchPlan"
+        summary["patch_plan_generated"] = patch_plan_generated
+        if patch_plan_generated:
+            summary["patch_diff"] = repair_plan["patch_plan"]["unified_diff"]
+
+        if args.mode == "repair":
+            patch_review = repair_plan.get("patch_review")
+            can_apply = (
+                args.confirm_apply
+                and patch_plan_generated
+                and patch_review is not None
+                and patch_review["approved"]
+                and not patch_review["blocked"]
+            )
+            if can_apply:
+                patch_plan = PatchPlanner().create_plan(
+                    task_id="external_repo_smoke",
+                    repo_dir=str(workspace_dir),
+                    parsed_error=parsed_error,
+                    failure_memory=failure_memory,
+                )
+                if patch_plan is not None:
+                    summary["patch_applied"] = PatchApplier().apply(
+                        str(workspace_dir),
+                        patch_plan,
+                    )
+            elif args.mode == "repair" and not args.confirm_apply:
+                repair_plan["note"] = (
+                    repair_plan.get("note", "")
+                    + " Patch was not applied because --confirm-apply was not set."
+                ).strip()
+
+            if summary["patch_applied"]:
+                repair_plan["note"] = (
+                    "Patch was reviewed, approved, and applied only inside the "
+                    "isolated workspace."
+                )
+                after = run_command(args.command, workspace_dir)
+                summary["after_return_code"] = after.returncode
+                summary["after_command"] = {
+                    "command": args.command,
+                    "return_code": after.returncode,
+                    "success": after.returncode == 0,
+                    "stdout": after.stdout,
+                    "stderr": after.stderr,
+                }
+
+        summary["final_status"] = final_status(
+            before_return_code=result.returncode,
+            after_return_code=summary["after_return_code"],
+            detected_failure_type=parsed_error.error_type,
+            patch_plan_generated=summary["patch_plan_generated"],
+            patch_applied=summary["patch_applied"],
+        )
+    elif args.mode in {"repair-plan", "repair"}:
         summary["repair_plan"] = {
             "plan_type": "no_op",
             "note": "Command succeeded, so no repair plan was generated.",
@@ -235,7 +330,10 @@ def build_markdown(summary: dict[str, Any]) -> str:
         f"- Repo path: `{summary['repo_path']}`",
         f"- Workspace dir: `{summary['workspace_dir']}`",
         f"- Command: `{command['command']}`",
-        f"- Return code: `{command['return_code']}`",
+        f"- Before return code: `{summary['before_return_code']}`",
+        f"- After return code: `{summary['after_return_code']}`",
+        f"- Patch applied: `{summary['patch_applied']}`",
+        f"- Final status: `{summary['final_status']}`",
         f"- Scope: {summary['scope_note']}",
         "",
         "## Diagnosis",
@@ -273,6 +371,14 @@ def build_markdown(summary: dict[str, Any]) -> str:
             patch_review = repair_plan["patch_review"]
             lines.append(f"- PatchPlan target: `{patch_plan['target_file']}`")
             lines.append(f"- PatchPlan change: {patch_plan['proposed_change']}")
+            lines.append("- PatchPlan diff:")
+            lines.append("")
+            lines.append("```diff")
+            lines.append(patch_plan["unified_diff"])
+            lines.append("```")
+            if patch_plan.get("safety_notes"):
+                lines.append("- Safety notes:")
+                lines.extend(f"  - {line(item)}" for item in patch_plan["safety_notes"])
             lines.append(
                 "- PatchSafetyReviewer: "
                 f"approved={patch_review['approved']} "
@@ -308,8 +414,11 @@ def print_console_summary(summary: dict[str, Any]) -> None:
     print("SciCodePilot External Repo Smoke")
     print(f"- Mode: {summary['mode']}")
     print(f"- Workspace: {summary['workspace_dir']}")
-    print(f"- Command return code: {command['return_code']}")
+    print(f"- Before return code: {summary['before_return_code']}")
+    print(f"- After return code: {summary['after_return_code']}")
     print(f"- Error type: {parsed['error_type']}")
+    print(f"- Patch applied: {summary['patch_applied']}")
+    print(f"- Final status: {summary['final_status']}")
     print(f"- Evidence: {line((parsed.get('evidence') or ['None'])[0])}")
     print(f"- FailureMemory: {memory['root_cause_hypothesis']}")
     if "repair_plan" in summary:

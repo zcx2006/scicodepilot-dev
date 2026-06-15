@@ -82,3 +82,54 @@ def test_external_repo_smoke_repair_plan_does_not_apply_patch_to_original_repo(t
     assert summary["repair_plan"]["plan_type"] == "EnvRepairPlan"
     assert "workspace" in summary["workspace_dir"]
     assert Path(summary["workspace_dir"]).exists()
+
+
+def test_external_repo_smoke_repair_succeeds_on_minimal_assertion_case(tmp_path) -> None:
+    repo_dir = tmp_path / "external_assertion_repo"
+    repo_dir.mkdir()
+    sample_path = repo_dir / "sample.py"
+    original_text = (
+        "def cli_bool_option(params, command_option, param):\n"
+        "    param = params.get(param)\n"
+        "    assert isinstance(param, bool)\n"
+        "    return [command_option] if param else []\n"
+    )
+    sample_path.write_text(original_text, encoding="utf-8")
+    output_dir = tmp_path / "smoke_repair"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "run_external_repo_smoke.py"),
+            "--repo-path",
+            str(repo_dir),
+            "--command",
+            (
+                f"{sys.executable} -c \"from sample import cli_bool_option; "
+                "print(cli_bool_option({}, '--flag', 'missing'))\""
+            ),
+            "--mode",
+            "repair",
+            "--confirm-apply",
+            "--output-dir",
+            str(output_dir),
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert sample_path.read_text(encoding="utf-8") == original_text
+
+    summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+    assert summary["before_return_code"] == 1
+    assert summary["after_return_code"] == 0
+    assert summary["detected_failure_type"] == "external_assertion_failure"
+    assert summary["failure_memory_specialized"] is True
+    assert summary["patch_plan_generated"] is True
+    assert summary["patch_applied"] is True
+    assert summary["original_repo_mutated"] is False
+    assert summary["final_status"] == "patch_success"
+    assert "if param is None:" in summary["patch_diff"]

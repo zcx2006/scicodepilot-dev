@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 
 from pydantic import BaseModel
@@ -9,6 +10,13 @@ class ParsedError(BaseModel):
     error_type: str
     summary: str
     evidence: list[str]
+    exception_type: str | None = None
+    file_path: str | None = None
+    line_number: int | None = None
+    function_name: str | None = None
+    assertion_expr: str | None = None
+    command: str | None = None
+    stderr_evidence: list[str] | None = None
 
 
 @dataclass(frozen=True)
@@ -149,6 +157,10 @@ class TracebackParser:
 
     def parse(self, stderr_lines: list[str]) -> ParsedError | None:
         """Return a ParsedError for known stderr patterns, or None."""
+        assertion_error = self._parse_external_assertion_error(stderr_lines)
+        if assertion_error is not None:
+            return assertion_error
+
         for line in stderr_lines:
             for rule in ERROR_RULES:
                 if any(pattern in line for pattern in rule.patterns):
@@ -159,3 +171,73 @@ class TracebackParser:
                     )
 
         return None
+
+    def _parse_external_assertion_error(
+        self,
+        stderr_lines: list[str],
+    ) -> ParsedError | None:
+        if not any("AssertionError" in line for line in stderr_lines):
+            return None
+
+        frame_pattern = re.compile(
+            r'^\s*File "(?P<file>.+?)", line (?P<line>\d+), in (?P<func>[^\s]+)'
+        )
+        frames: list[tuple[str, int, str, int]] = []
+        for index, line in enumerate(stderr_lines):
+            match = frame_pattern.match(line)
+            if match is None:
+                continue
+            frames.append(
+                (
+                    match.group("file"),
+                    int(match.group("line")),
+                    match.group("func"),
+                    index,
+                )
+            )
+
+        if not frames:
+            return None
+
+        file_path, line_number, function_name, frame_index = frames[-1]
+        assertion_expr = self._find_assertion_expr(stderr_lines, frame_index)
+        evidence = self._assertion_evidence(stderr_lines, assertion_expr)
+
+        return ParsedError(
+            error_type="external_assertion_failure",
+            summary=(
+                "External AssertionError triggered while running the "
+                "user-provided command."
+            ),
+            evidence=evidence,
+            exception_type="AssertionError",
+            file_path=file_path,
+            line_number=line_number,
+            function_name=function_name,
+            assertion_expr=assertion_expr,
+            stderr_evidence=evidence,
+        )
+
+    def _find_assertion_expr(
+        self,
+        stderr_lines: list[str],
+        frame_index: int,
+    ) -> str | None:
+        for line in stderr_lines[frame_index + 1 :]:
+            stripped = line.strip()
+            if stripped.startswith('File "'):
+                return None
+            if stripped.startswith("assert "):
+                return stripped
+        return None
+
+    def _assertion_evidence(
+        self,
+        stderr_lines: list[str],
+        assertion_expr: str | None,
+    ) -> list[str]:
+        evidence: list[str] = []
+        if assertion_expr:
+            evidence.append(assertion_expr)
+        evidence.extend(line.strip() for line in stderr_lines if "AssertionError" in line)
+        return evidence or ["AssertionError"]

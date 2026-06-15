@@ -81,6 +81,17 @@ class FailureMemoryBuilder:
                 "Use the existing configuration key name, such as learning_rate, "
                 "or add explicit key validation before reading the config.",
             ),
+            "external_assertion_failure": (
+                "External AssertionError triggered while running the "
+                "user-provided command. The command reached an assert statement "
+                "in application code. When the assertion checks that a value is "
+                "bool, the observed control path can produce None if a requested "
+                "configuration key is absent.",
+                "Inspect the assignment immediately before the assertion. If a "
+                "dict .get(...) call can return None and the surrounding function "
+                "should emit no CLI arguments for missing options, add a "
+                "conservative None guard before the bool assertion.",
+            ),
         }
 
         template = memory_templates.get(parsed_error.error_type)

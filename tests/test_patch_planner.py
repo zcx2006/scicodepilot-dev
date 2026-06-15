@@ -254,3 +254,40 @@ def test_patch_planner_does_not_modify_file() -> None:
 
     updated_content = train_path.read_text(encoding="utf-8")
     assert updated_content == original_content
+
+
+def test_patch_planner_generates_external_assertion_none_guard(tmp_path) -> None:
+    repo_dir = tmp_path / "external_repo"
+    repo_dir.mkdir()
+    sample_path = repo_dir / "sample.py"
+    sample_path.write_text(
+        "def cli_bool_option(params, command_option, param):\n"
+        "    param = params.get(param)\n"
+        "    assert isinstance(param, bool)\n"
+        "    return [\"x\"] if param else []\n",
+        encoding="utf-8",
+    )
+    parsed_error = ParsedError(
+        error_type="external_assertion_failure",
+        summary="External AssertionError triggered while running the user-provided command.",
+        evidence=["assert isinstance(param, bool)", "AssertionError"],
+        exception_type="AssertionError",
+        file_path=str(sample_path),
+        line_number=3,
+        function_name="cli_bool_option",
+        assertion_expr="assert isinstance(param, bool)",
+    )
+
+    plan = PatchPlanner().create_plan(
+        task_id="external_repo_smoke",
+        repo_dir=str(repo_dir),
+        parsed_error=parsed_error,
+        failure_memory=make_memory(parsed_error),
+    )
+
+    assert plan is not None
+    assert plan.error_type == "external_assertion_failure"
+    assert plan.target_file == "sample.py"
+    assert "+    if param is None:" in plan.unified_diff
+    assert "+        return []" in plan.unified_diff
+    assert "params.get" in plan.rationale

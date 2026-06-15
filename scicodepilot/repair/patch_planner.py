@@ -1,4 +1,5 @@
 import difflib
+import re
 from pathlib import Path
 
 from scicodepilot.memory.failure_memory import FailureMemory
@@ -17,6 +18,14 @@ class PatchPlanner:
         failure_memory: FailureMemory,
     ) -> PatchPlan | None:
         """Create a patch plan for supported errors, or None."""
+        if parsed_error.error_type == "external_assertion_failure":
+            return self._plan_external_assertion_failure(
+                task_id=task_id,
+                repo_dir=repo_dir,
+                parsed_error=parsed_error,
+                failure_memory=failure_memory,
+            )
+
         train_path = Path(repo_dir) / "train.py"
         lines = train_path.read_text(encoding="utf-8").splitlines()
 
@@ -449,12 +458,124 @@ class PatchPlanner:
             "should change to 64."
         )
 
-    def _build_diff(self, original_lines: list[str], updated_lines: list[str]) -> str:
+    def _plan_external_assertion_failure(
+        self,
+        task_id: str,
+        repo_dir: str,
+        parsed_error: ParsedError,
+        failure_memory: FailureMemory,
+    ) -> PatchPlan | None:
+        if parsed_error.assertion_expr is None or parsed_error.line_number is None:
+            return None
+
+        assert_match = re.fullmatch(
+            r"assert\s+isinstance\((?P<var>[A-Za-z_][A-Za-z0-9_]*),\s*bool\)",
+            parsed_error.assertion_expr,
+        )
+        if assert_match is None:
+            return None
+
+        repo_path = Path(repo_dir).resolve()
+        target_path = self._resolve_external_target(repo_path, parsed_error.file_path)
+        if target_path is None:
+            return None
+
+        lines = target_path.read_text(encoding="utf-8").splitlines()
+        assert_index = parsed_error.line_number - 1
+        if assert_index < 0 or assert_index >= len(lines):
+            return None
+
+        if lines[assert_index].strip() != parsed_error.assertion_expr:
+            return None
+
+        variable = assert_match.group("var")
+        assignment_index = self._find_nearest_get_assignment(lines, assert_index, variable)
+        if assignment_index is None:
+            return None
+
+        assignment_text = lines[assignment_index].strip()
+        indent = lines[assert_index][: len(lines[assert_index]) - len(lines[assert_index].lstrip())]
+        updated_lines = lines.copy()
+        updated_lines[assert_index:assert_index] = [
+            f"{indent}if {variable} is None:",
+            f"{indent}    return []",
+        ]
+        target_file = target_path.relative_to(repo_path).as_posix()
+
+        return PatchPlan(
+            task_id=task_id,
+            error_type=parsed_error.error_type,
+            target_file=target_file,
+            suspected_line=parsed_error.line_number,
+            rationale=(
+                "The parsed failure is an external AssertionError in "
+                f"{parsed_error.function_name}. The failing assertion is "
+                f"{parsed_error.assertion_expr!r}. The nearest preceding assignment "
+                f"uses {assignment_text!r}, which can return None for a "
+                "missing key before a bool-only CLI option assertion."
+            ),
+            proposed_change=(
+                f"Insert a conservative None guard before the bool assertion in "
+                f"{parsed_error.function_name}: return [] when {variable} is None."
+            ),
+            unified_diff=self._build_diff(lines, updated_lines, target_file=target_file),
+            confidence=0.82,
+            safety_notes=[
+                "Pattern matched only assert isinstance(<var>, bool).",
+                "Patch is limited to the isolated workspace target file.",
+                "No command, dependency, or repository metadata changes are proposed.",
+            ],
+        )
+
+    def _resolve_external_target(
+        self,
+        repo_path: Path,
+        parsed_file_path: str | None,
+    ) -> Path | None:
+        if not parsed_file_path:
+            return None
+
+        candidate = Path(parsed_file_path)
+        if candidate.is_absolute():
+            resolved = candidate.resolve()
+            try:
+                resolved.relative_to(repo_path)
+            except ValueError:
+                return None
+            return resolved if resolved.exists() else None
+
+        resolved = (repo_path / candidate).resolve()
+        try:
+            resolved.relative_to(repo_path)
+        except ValueError:
+            return None
+        return resolved if resolved.exists() else None
+
+    def _find_nearest_get_assignment(
+        self,
+        lines: list[str],
+        assert_index: int,
+        variable: str,
+    ) -> int | None:
+        assignment_pattern = re.compile(
+            rf"^\s*{re.escape(variable)}\s*=\s*[A-Za-z_][A-Za-z0-9_\\.]*\.get\(.+\)\s*$"
+        )
+        for index in range(assert_index - 1, max(assert_index - 8, -1), -1):
+            if assignment_pattern.match(lines[index]):
+                return index
+        return None
+
+    def _build_diff(
+        self,
+        original_lines: list[str],
+        updated_lines: list[str],
+        target_file: str = "train.py",
+    ) -> str:
         diff_lines = difflib.unified_diff(
             original_lines,
             updated_lines,
-            fromfile="train.py",
-            tofile="train.py",
+            fromfile=target_file,
+            tofile=target_file,
             lineterm="",
         )
         return "\n".join(diff_lines)
