@@ -146,7 +146,7 @@ http://127.0.0.1:8000
 仓库同时提供了一个可用于 GitHub Pages 的静态项目主页：
 
 ```text
-docs/index.html
+[docs/index.html](https://zcx2006.github.io/scicodepilot-dev/)
 ```
 
 该页面展示项目介绍、方法、benchmark、memory retrieval、LLM smoke、safety analysis、agent comparison、前端说明和运行方式。它不依赖 Python 后端，因此作为公开项目 homepage 发布。
