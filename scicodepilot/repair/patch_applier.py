@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from scicodepilot.repair.patch_plan import PatchPlan
 
@@ -17,17 +18,24 @@ class PatchApplier:
             return False
 
         replacements = self._extract_replacements(patch_plan.unified_diff)
-        if not replacements:
-            return False
 
         original_content = target_path.read_text(encoding="utf-8")
         updated_content = original_content
 
-        for old_line, new_line in replacements:
-            if old_line not in updated_content:
-                return False
+        if replacements:
+            for old_line, new_line in replacements:
+                if old_line not in updated_content:
+                    return False
 
-            updated_content = updated_content.replace(old_line, new_line, 1)
+                updated_content = updated_content.replace(old_line, new_line, 1)
+        else:
+            patched_content = self._apply_single_file_unified_diff(
+                original_content,
+                patch_plan.unified_diff,
+            )
+            if patched_content is None:
+                return False
+            updated_content = patched_content
 
         target_path.write_text(updated_content, encoding="utf-8")
         return True
@@ -54,3 +62,68 @@ class PatchApplier:
             return []
 
         return list(zip(removed_lines, added_lines))
+
+    def _apply_single_file_unified_diff(
+        self,
+        original_content: str,
+        unified_diff: str,
+    ) -> str | None:
+        """Apply a simple single-file unified diff, including pure insertions."""
+        original_lines = original_content.splitlines()
+        keep_trailing_newline = original_content.endswith("\n")
+        diff_lines = unified_diff.splitlines()
+        output_lines: list[str] = []
+        old_cursor = 0
+        index = 0
+        saw_hunk = False
+        hunk_pattern = re.compile(r"@@ -(?P<old_start>\d+)(?:,\d+)? \+\d+(?:,\d+)? @@")
+
+        while index < len(diff_lines):
+            diff_line = diff_lines[index]
+            if diff_line.startswith(("--- ", "+++ ")):
+                index += 1
+                continue
+
+            match = hunk_pattern.match(diff_line)
+            if match is None:
+                index += 1
+                continue
+
+            saw_hunk = True
+            old_start = int(match.group("old_start")) - 1
+            if old_start < old_cursor or old_start > len(original_lines):
+                return None
+
+            output_lines.extend(original_lines[old_cursor:old_start])
+            old_cursor = old_start
+            index += 1
+
+            while index < len(diff_lines) and not diff_lines[index].startswith("@@"):
+                line = diff_lines[index]
+                if line.startswith(" "):
+                    expected = line[1:]
+                    if old_cursor >= len(original_lines) or original_lines[old_cursor] != expected:
+                        return None
+                    output_lines.append(expected)
+                    old_cursor += 1
+                elif line.startswith("-"):
+                    expected = line[1:]
+                    if old_cursor >= len(original_lines) or original_lines[old_cursor] != expected:
+                        return None
+                    old_cursor += 1
+                elif line.startswith("+"):
+                    output_lines.append(line[1:])
+                elif line.startswith("\\"):
+                    pass
+                else:
+                    return None
+                index += 1
+
+        if not saw_hunk:
+            return None
+
+        output_lines.extend(original_lines[old_cursor:])
+        updated_content = "\n".join(output_lines)
+        if keep_trailing_newline:
+            updated_content += "\n"
+        return updated_content

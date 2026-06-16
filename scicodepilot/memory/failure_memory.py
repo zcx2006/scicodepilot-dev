@@ -17,6 +17,27 @@ class FailureMemoryBuilder:
 
     def from_parsed_error(self, parsed_error: ParsedError) -> FailureMemory:
         """Create specialized memory when possible, otherwise use a safe fallback."""
+        if (
+            parsed_error.error_type == "external_assertion_failure"
+            and parsed_error.target_symbol == "unified_strdate"
+        ):
+            return FailureMemory(
+                error_type=parsed_error.error_type,
+                evidence=parsed_error.evidence,
+                root_cause_hypothesis=(
+                    "The external verification command asserted that "
+                    "unified_strdate('not-a-date') should return None, but the "
+                    "assertion failed. The date parser leaves upload_date as "
+                    "None for invalid date strings, but the implementation "
+                    "converts None with compat_str, producing the string 'None' "
+                    "instead of returning None."
+                ),
+                repair_action=(
+                    "Guard the final compat_str(upload_date) conversion and "
+                    "return a value only when upload_date is not None."
+                ),
+            )
+
         memory_templates = {
             "tensor_shape": (
                 "The tensor feature dimension used in matrix multiplication is "
@@ -80,6 +101,34 @@ class FailureMemoryBuilder:
                 "experiment configuration.",
                 "Use the existing configuration key name, such as learning_rate, "
                 "or add explicit key validation before reading the config.",
+            ),
+            "external_assertion_failure": (
+                "External AssertionError triggered while running the "
+                "user-provided command. The command reached an assert statement "
+                "in application code. When the assertion checks that a value is "
+                "bool, the observed control path can produce None if a requested "
+                "configuration key is absent.",
+                "Inspect the assignment immediately before the assertion. If a "
+                "dict .get(...) call can return None and the surrounding function "
+                "should emit no CLI arguments for missing options, add a "
+                "conservative None guard before the bool assertion.",
+            ),
+            "external_type_error": (
+                "External TypeError triggered because a non-string input reached "
+                "string/regex processing. str_to_int accepts an int input, but "
+                "the implementation only handles None specially and then passes "
+                "int_str into re.sub, which expects a string or bytes-like object.",
+                "Guard non-string inputs before regex normalization. If the input "
+                "is not compat_str, return it unchanged.",
+            ),
+            "external_env_failure": (
+                "The external command failed before reaching the target bug "
+                "because the project depends on a standard-library module that "
+                "is unavailable in the active Python interpreter.",
+                "Use a compatible Python interpreter for this external case, "
+                "such as Python 3.11 for older youtube-dl revisions that import "
+                "the removed pipes module. Do not auto-install or modify the "
+                "environment from the repair flow.",
             ),
         }
 

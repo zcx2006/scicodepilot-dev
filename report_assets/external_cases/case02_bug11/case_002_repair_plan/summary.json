@@ -1,0 +1,39 @@
+{
+  "mode": "repair-plan",
+  "repo_path": "D:\\Git\\My_Git_Project\\Bugs_2nd_try\\BugsInPy_Workdir\\case_002_bug11\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\Bugs_2nd_try\\external_experiments\\scicodepilot_outputs\\case_002_repair_plan",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\Bugs_2nd_try\\external_experiments\\scicodepilot_outputs\\case_002_repair_plan\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "command": {
+    "command": "python -c \"from youtube_dl.utils import str_to_int; print(str_to_int(123))\"",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from youtube_dl.utils import str_to_int; print(str_to_int(123))\n                                                   ~~~~~~~~~~^^^^^\n  File \"D:\\Git\\My_Git_Project\\Bugs_2nd_try\\external_experiments\\scicodepilot_outputs\\case_002_repair_plan\\workspace\\youtube_dl\\utils.py\", line 3524, in str_to_int\n    int_str = re.sub(r'[,\\.\\+]', '', int_str)\n  File \"C:\\Users\\Liu\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\re\\__init__.py\", line 208, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: expected string or bytes-like object, got 'int'\n"
+  },
+  "parsed_error": {
+    "error_type": "unsupported_external_failure",
+    "summary": "The command failed, but the current external repo smoke interface does not have a specialized parser rule for this failure.",
+    "evidence": [
+      "    return _compile(pattern, flags).sub(repl, string, count)",
+      "           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^",
+      "TypeError: expected string or bytes-like object, got 'int'"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "unsupported_external_failure",
+    "evidence": [
+      "    return _compile(pattern, flags).sub(repl, string, count)",
+      "           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^",
+      "TypeError: expected string or bytes-like object, got 'int'"
+    ],
+    "root_cause_hypothesis": "The command failed, but the current rule-based memory builder has no specialized hypothesis for this error type.",
+    "repair_action": "Inspect the stderr evidence manually and extend the failure-memory rules if this error type should be supported."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison.",
+  "repair_plan": {
+    "plan_type": "no_op",
+    "note": "unsupported_external_failure: current system can only generate a diagnosis summary or no-op plan for this external failure."
+  }
+}
