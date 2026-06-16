@@ -115,7 +115,7 @@ python scripts/run_external_repo_smoke.py --repo-path <local_repo> --command "py
 
 ## 前端展示
 
-前端是后端事件流的展示层。项目目前提供两个前端入口：一个用于课堂展示和录屏的网页 demo，一个用于开发调试和备用演示的 Textual 终端前端。
+前端是后端事件流的展示层。项目目前提供两个前端入口：一个用于课堂展示和录屏的网页 demo（包括一个github静态网页），一个用于开发调试和备用演示的 Textual 终端前端。
 
 启动本地网页 demo：
 
@@ -146,16 +146,11 @@ http://127.0.0.1:8000
 仓库同时提供了一个可用于 GitHub Pages 的静态项目主页：
 
 ```text
-[docs/index.html](https://zcx2006.github.io/scicodepilot-dev/)
+https://zcx2006.github.io/scicodepilot-dev/
 ```
 
 该页面展示项目介绍、方法、benchmark、memory retrieval、LLM smoke、safety analysis、agent comparison、前端说明和运行方式。它不依赖 Python 后端，因此作为公开项目 homepage 发布。
 
-
-
-```powershell
-python scripts/run_web_demo.py
-```
 
 Textual 终端前端入口：
 
