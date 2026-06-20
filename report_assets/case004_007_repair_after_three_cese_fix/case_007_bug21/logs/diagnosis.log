@@ -1,0 +1,14 @@
+SciCodePilot External Repo Smoke
+- Mode: diagnosis
+- Workspace: D:\Git\My_Git_Project\BugsInPy_0616_2\external_experiments_0616_2\case_007_bug21\outputs\diagnosis\workspace
+- Interpreter: py
+- Python version: None
+- Before return code: 1
+- After return code: None
+- Error type: external_assertion_failure
+- Patch applied: False
+- Final status: patch_failed
+- Evidence: raise AssertionError(
+- FailureMemory: External AssertionError triggered while running the user-provided command. The command reached an assert statement in application code. When the assertion checks that a value is bool, the observed control path can produce None if a requested configuration key is absent.
+- summary.md: D:\Git\My_Git_Project\BugsInPy_0616_2\external_experiments_0616_2\case_007_bug21\outputs\diagnosis\summary.md
+- summary.json: D:\Git\My_Git_Project\BugsInPy_0616_2\external_experiments_0616_2\case_007_bug21\outputs\diagnosis\summary.json

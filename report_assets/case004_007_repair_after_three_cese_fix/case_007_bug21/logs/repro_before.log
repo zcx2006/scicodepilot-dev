@@ -1,0 +1,26 @@
+Bug 21 minimal reproduction
+
+case    = bytes path
+base    = 'https://example.com/root/'
+path    = b'video/page.html'
+actual  = None
+expected= 'https://example.com/root/video/page.html'
+
+case    = bytes base
+base    = b'https://example.com/root/'
+path    = 'video/page.html'
+actual  = None
+expected= 'https://example.com/root/video/page.html'
+
+case    = bytes base and path
+base    = b'https://example.com/root/'
+path    = b'video/page.html'
+actual  = None
+expected= 'https://example.com/root/video/page.html'
+Traceback (most recent call last):
+  File "D:\Git\My_Git_Project\BugsInPy_0616_2\BugsInPy_Workdir\case_007_bug21\youtube-dl\repro_bug21.py", line 49, in <module>
+    raise AssertionError(
+AssertionError: Bytes URL handling failed:
+- bytes path: expected 'https://example.com/root/video/page.html', got None
+- bytes base: expected 'https://example.com/root/video/page.html', got None
+- bytes base and path: expected 'https://example.com/root/video/page.html', got None

@@ -1,0 +1,80 @@
+{
+  "mode": "repair-plan",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\BugsInPy_Workdir\\case_006_bug13\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace",
+  "workspace_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "interpreter": "py",
+  "python_executable": "py",
+  "python_version": null,
+  "before_return_code": 1,
+  "after_return_code": null,
+  "detected_failure_type": "external_assertion_failure",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": true,
+  "patch_plan_generated": false,
+  "patch_applied": false,
+  "patch_diff": "",
+  "final_status": "patch_failed",
+  "command": {
+    "command": "py -3.11 repro_bug13.py",
+    "interpreter": "py",
+    "python_executable": "py",
+    "python_version": null,
+    "return_code": 1,
+    "success": false,
+    "stdout": "Bug 13 minimal reproduction\nbase    = None\npath    = 'rtmp://media.example.com/live/stream'\nactual  = None\nexpected= 'rtmp://media.example.com/live/stream'\n",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace\\youtube_dl\\extractor\\pandatv.py:39: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace\\repro_bug13.py\", line 20, in <module>\n    raise AssertionError(\nAssertionError: Absolute URL with a non-HTTP scheme was handled incorrectly: expected 'rtmp://media.example.com/live/stream', got None\n"
+  },
+  "before_command": {
+    "command": "py -3.11 repro_bug13.py",
+    "interpreter": "py",
+    "python_executable": "py",
+    "python_version": null,
+    "return_code": 1,
+    "success": false,
+    "stdout": "Bug 13 minimal reproduction\nbase    = None\npath    = 'rtmp://media.example.com/live/stream'\nactual  = None\nexpected= 'rtmp://media.example.com/live/stream'\n",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace\\youtube_dl\\extractor\\pandatv.py:39: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace\\repro_bug13.py\", line 20, in <module>\n    raise AssertionError(\nAssertionError: Absolute URL with a non-HTTP scheme was handled incorrectly: expected 'rtmp://media.example.com/live/stream', got None\n"
+  },
+  "after_command": null,
+  "parsed_error": {
+    "error_type": "external_assertion_failure",
+    "summary": "External AssertionError triggered while running the user-provided command.",
+    "evidence": [
+      "raise AssertionError(",
+      "AssertionError: Absolute URL with a non-HTTP scheme was handled incorrectly: expected 'rtmp://media.example.com/live/stream', got None"
+    ],
+    "exception_type": "AssertionError",
+    "file_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_006_bug13\\outputs\\repair-plan\\workspace\\repro_bug13.py",
+    "line_number": 20,
+    "function_name": "<module>",
+    "assertion_expr": null,
+    "assertion_location": "source",
+    "target_symbol": null,
+    "expected_value": null,
+    "error_message": null,
+    "failing_expression": null,
+    "interpreter": null,
+    "command": "py -3.11 repro_bug13.py",
+    "stderr_evidence": [
+      "raise AssertionError(",
+      "AssertionError: Absolute URL with a non-HTTP scheme was handled incorrectly: expected 'rtmp://media.example.com/live/stream', got None"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "external_assertion_failure",
+    "evidence": [
+      "raise AssertionError(",
+      "AssertionError: Absolute URL with a non-HTTP scheme was handled incorrectly: expected 'rtmp://media.example.com/live/stream', got None"
+    ],
+    "root_cause_hypothesis": "External AssertionError triggered while running the user-provided command. The command reached an assert statement in application code. When the assertion checks that a value is bool, the observed control path can produce None if a requested configuration key is absent.",
+    "repair_action": "Inspect the assignment immediately before the assertion. If a dict .get(...) call can return None and the surrounding function should emit no CLI arguments for missing options, add a conservative None guard before the bool assertion."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison.",
+  "repair_plan": {
+    "plan_type": "no_op",
+    "note": "No source-code patch plan is available for this external failure type."
+  }
+}

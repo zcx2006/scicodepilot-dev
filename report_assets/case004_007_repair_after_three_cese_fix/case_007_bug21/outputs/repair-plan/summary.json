@@ -1,0 +1,80 @@
+{
+  "mode": "repair-plan",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\BugsInPy_Workdir\\case_007_bug21\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace",
+  "workspace_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "interpreter": "py",
+  "python_executable": "py",
+  "python_version": null,
+  "before_return_code": 1,
+  "after_return_code": null,
+  "detected_failure_type": "external_assertion_failure",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": true,
+  "patch_plan_generated": false,
+  "patch_applied": false,
+  "patch_diff": "",
+  "final_status": "patch_failed",
+  "command": {
+    "command": "py -3.11 repro_bug21.py",
+    "interpreter": "py",
+    "python_executable": "py",
+    "python_version": null,
+    "return_code": 1,
+    "success": false,
+    "stdout": "Bug 21 minimal reproduction\n\ncase    = bytes path\nbase    = 'https://example.com/root/'\npath    = b'video/page.html'\nactual  = None\nexpected= 'https://example.com/root/video/page.html'\n\ncase    = bytes base\nbase    = b'https://example.com/root/'\npath    = 'video/page.html'\nactual  = None\nexpected= 'https://example.com/root/video/page.html'\n\ncase    = bytes base and path\nbase    = b'https://example.com/root/'\npath    = b'video/page.html'\nactual  = None\nexpected= 'https://example.com/root/video/page.html'\n",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace\\youtube_dl\\extractor\\pandatv.py:36: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace\\repro_bug21.py\", line 49, in <module>\n    raise AssertionError(\nAssertionError: Bytes URL handling failed:\n- bytes path: expected 'https://example.com/root/video/page.html', got None\n- bytes base: expected 'https://example.com/root/video/page.html', got None\n- bytes base and path: expected 'https://example.com/root/video/page.html', got None\n"
+  },
+  "before_command": {
+    "command": "py -3.11 repro_bug21.py",
+    "interpreter": "py",
+    "python_executable": "py",
+    "python_version": null,
+    "return_code": 1,
+    "success": false,
+    "stdout": "Bug 21 minimal reproduction\n\ncase    = bytes path\nbase    = 'https://example.com/root/'\npath    = b'video/page.html'\nactual  = None\nexpected= 'https://example.com/root/video/page.html'\n\ncase    = bytes base\nbase    = b'https://example.com/root/'\npath    = 'video/page.html'\nactual  = None\nexpected= 'https://example.com/root/video/page.html'\n\ncase    = bytes base and path\nbase    = b'https://example.com/root/'\npath    = b'video/page.html'\nactual  = None\nexpected= 'https://example.com/root/video/page.html'\n",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace\\youtube_dl\\extractor\\pandatv.py:36: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace\\repro_bug21.py\", line 49, in <module>\n    raise AssertionError(\nAssertionError: Bytes URL handling failed:\n- bytes path: expected 'https://example.com/root/video/page.html', got None\n- bytes base: expected 'https://example.com/root/video/page.html', got None\n- bytes base and path: expected 'https://example.com/root/video/page.html', got None\n"
+  },
+  "after_command": null,
+  "parsed_error": {
+    "error_type": "external_assertion_failure",
+    "summary": "External AssertionError triggered while running the user-provided command.",
+    "evidence": [
+      "raise AssertionError(",
+      "AssertionError: Bytes URL handling failed:"
+    ],
+    "exception_type": "AssertionError",
+    "file_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_007_bug21\\outputs\\repair-plan\\workspace\\repro_bug21.py",
+    "line_number": 49,
+    "function_name": "<module>",
+    "assertion_expr": null,
+    "assertion_location": "source",
+    "target_symbol": null,
+    "expected_value": null,
+    "error_message": null,
+    "failing_expression": null,
+    "interpreter": null,
+    "command": "py -3.11 repro_bug21.py",
+    "stderr_evidence": [
+      "raise AssertionError(",
+      "AssertionError: Bytes URL handling failed:"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "external_assertion_failure",
+    "evidence": [
+      "raise AssertionError(",
+      "AssertionError: Bytes URL handling failed:"
+    ],
+    "root_cause_hypothesis": "External AssertionError triggered while running the user-provided command. The command reached an assert statement in application code. When the assertion checks that a value is bool, the observed control path can produce None if a requested configuration key is absent.",
+    "repair_action": "Inspect the assignment immediately before the assertion. If a dict .get(...) call can return None and the surrounding function should emit no CLI arguments for missing options, add a conservative None guard before the bool assertion."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison.",
+  "repair_plan": {
+    "plan_type": "no_op",
+    "note": "No source-code patch plan is available for this external failure type."
+  }
+}

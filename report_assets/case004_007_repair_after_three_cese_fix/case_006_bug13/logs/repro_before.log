@@ -1,0 +1,9 @@
+Bug 13 minimal reproduction
+base    = None
+path    = 'rtmp://media.example.com/live/stream'
+actual  = None
+expected= 'rtmp://media.example.com/live/stream'
+Traceback (most recent call last):
+  File "D:\Git\My_Git_Project\BugsInPy_0616_2\BugsInPy_Workdir\case_006_bug13\youtube-dl\repro_bug13.py", line 20, in <module>
+    raise AssertionError(
+AssertionError: Absolute URL with a non-HTTP scheme was handled incorrectly: expected 'rtmp://media.example.com/live/stream', got None

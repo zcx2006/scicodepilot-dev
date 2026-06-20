@@ -1,0 +1,6 @@
+export ROOT="/d/Git/My_Git_Project/BugsInPy_0616_2"
+export BIP="$ROOT/BugsInPy"
+export SCP="$ROOT/scicodepilot-dev-main"
+export WORK="$ROOT/BugsInPy_Workdir"
+export OUT="$ROOT/external_experiments_0616_2"
+export PATH="$BIP/framework/bin:$PATH"

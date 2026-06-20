@@ -1,0 +1,8 @@
+Bug 3 minimal reproduction
+input   = '&a&quot;'
+actual  = '&a&quot;'
+expected= '&a"'
+Traceback (most recent call last):
+  File "D:\Git\My_Git_Project\BugsInPy_0616_2\BugsInPy_Workdir\case_005_bug3\youtube-dl\repro_bug3.py", line 18, in <module>
+    raise AssertionError(
+AssertionError: Malformed HTML entity was decoded incorrectly: expected '&a"', got '&a&quot;'
