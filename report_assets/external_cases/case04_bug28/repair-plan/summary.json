@@ -1,0 +1,83 @@
+{
+  "mode": "repair-plan",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\BugsInPy_Workdir\\case_004_bug28\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace",
+  "workspace_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "interpreter": "py",
+  "python_executable": "py",
+  "python_version": null,
+  "before_return_code": 1,
+  "after_return_code": null,
+  "detected_failure_type": "unsupported_external_failure",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": false,
+  "patch_plan_generated": false,
+  "patch_applied": false,
+  "patch_diff": "",
+  "final_status": "unsupported_external_failure",
+  "command": {
+    "command": "py -3.11 repro_bug28.py",
+    "interpreter": "py",
+    "python_executable": "py",
+    "python_version": null,
+    "return_code": 1,
+    "success": false,
+    "stdout": "Bug 28 minimal reproduction\ninput   = '&#x110000;'\n",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\extractor\\douyutv.py:69: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\repro_bug28.py\", line 12, in <module>\n    result = unescapeHTML(source)\n             ^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\utils.py\", line 410, in unescapeHTML\n    return re.sub(\n           ^^^^^^^\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\re\\__init__.py\", line 185, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\utils.py\", line 411, in <lambda>\n    r'&([^;]+);', lambda m: _htmlentity_transform(m.group(1)), s)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\utils.py\", line 399, in _htmlentity_transform\n    return compat_chr(int(numstr, base))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: chr() arg not in range(0x110000)\n"
+  },
+  "before_command": {
+    "command": "py -3.11 repro_bug28.py",
+    "interpreter": "py",
+    "python_executable": "py",
+    "python_version": null,
+    "return_code": 1,
+    "success": false,
+    "stdout": "Bug 28 minimal reproduction\ninput   = '&#x110000;'\n",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\extractor\\douyutv.py:69: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\repro_bug28.py\", line 12, in <module>\n    result = unescapeHTML(source)\n             ^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\utils.py\", line 410, in unescapeHTML\n    return re.sub(\n           ^^^^^^^\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\re\\__init__.py\", line 185, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\utils.py\", line 411, in <lambda>\n    r'&([^;]+);', lambda m: _htmlentity_transform(m.group(1)), s)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616_2\\external_experiments_0616_2\\case_004_bug28\\outputs\\repair-plan\\workspace\\youtube_dl\\utils.py\", line 399, in _htmlentity_transform\n    return compat_chr(int(numstr, base))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: chr() arg not in range(0x110000)\n"
+  },
+  "after_command": null,
+  "parsed_error": {
+    "error_type": "unsupported_external_failure",
+    "summary": "The command failed, but the current external repo smoke interface does not have a specialized parser rule for this failure.",
+    "evidence": [
+      "    return compat_chr(int(numstr, base))",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "ValueError: chr() arg not in range(0x110000)"
+    ],
+    "exception_type": null,
+    "file_path": null,
+    "line_number": null,
+    "function_name": null,
+    "assertion_expr": null,
+    "assertion_location": null,
+    "target_symbol": null,
+    "expected_value": null,
+    "error_message": null,
+    "failing_expression": null,
+    "interpreter": null,
+    "command": "py -3.11 repro_bug28.py",
+    "stderr_evidence": [
+      "    return compat_chr(int(numstr, base))",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "ValueError: chr() arg not in range(0x110000)"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "unsupported_external_failure",
+    "evidence": [
+      "    return compat_chr(int(numstr, base))",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "ValueError: chr() arg not in range(0x110000)"
+    ],
+    "root_cause_hypothesis": "The command failed, but the current rule-based memory builder has no specialized hypothesis for this error type.",
+    "repair_action": "Inspect the stderr evidence manually and extend the failure-memory rules if this error type should be supported."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison.",
+  "repair_plan": {
+    "plan_type": "no_op",
+    "note": "unsupported_external_failure: current system can only generate a diagnosis summary or no-op plan for this external failure."
+  }
+}
