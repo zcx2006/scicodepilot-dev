@@ -1,0 +1,76 @@
+{
+  "mode": "diagnosis",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\BugsInPy_Workdir\\case_003_bug29\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\cases002_003\\outputs\\bug29_diagnosis",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\cases002_003\\outputs\\bug29_diagnosis\\workspace",
+  "workspace_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\cases002_003\\outputs\\bug29_diagnosis\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "interpreter": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe",
+  "python_executable": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe",
+  "python_version": "Python 3.11.9",
+  "before_return_code": 1,
+  "after_return_code": null,
+  "detected_failure_type": "external_assertion_failure",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": true,
+  "patch_plan_generated": false,
+  "patch_applied": false,
+  "patch_diff": "",
+  "final_status": "patch_failed",
+  "command": {
+    "command": "\"D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe\" -c \"from youtube_dl.utils import unified_strdate; assert unified_strdate('not-a-date') is None\"",
+    "interpreter": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe",
+    "python_executable": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe",
+    "python_version": "Python 3.11.9",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\cases002_003\\outputs\\bug29_diagnosis\\workspace\\youtube_dl\\extractor\\douyutv.py:69: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nAssertionError\n"
+  },
+  "before_command": {
+    "command": "\"D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe\" -c \"from youtube_dl.utils import unified_strdate; assert unified_strdate('not-a-date') is None\"",
+    "interpreter": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe",
+    "python_executable": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe",
+    "python_version": "Python 3.11.9",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\cases002_003\\outputs\\bug29_diagnosis\\workspace\\youtube_dl\\extractor\\douyutv.py:69: SyntaxWarning: \"is not\" with a literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nAssertionError\n"
+  },
+  "after_command": null,
+  "parsed_error": {
+    "error_type": "external_assertion_failure",
+    "summary": "External AssertionError triggered while running the user-provided command.",
+    "evidence": [
+      "assert unified_strdate('not-a-date') is None",
+      "AssertionError"
+    ],
+    "exception_type": "AssertionError",
+    "file_path": "<string>",
+    "line_number": 1,
+    "function_name": "<module>",
+    "assertion_expr": "assert unified_strdate('not-a-date') is None",
+    "assertion_location": "command",
+    "target_symbol": "unified_strdate",
+    "expected_value": "None",
+    "error_message": null,
+    "failing_expression": null,
+    "interpreter": null,
+    "command": "\"D:\\Git\\My_Git_Project\\BugsInPy_0616\\venvs\\case_003_bug29_py311\\Scripts\\python.exe\" -c \"from youtube_dl.utils import unified_strdate; assert unified_strdate('not-a-date') is None\"",
+    "stderr_evidence": [
+      "assert unified_strdate('not-a-date') is None",
+      "AssertionError"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "external_assertion_failure",
+    "evidence": [
+      "assert unified_strdate('not-a-date') is None",
+      "AssertionError"
+    ],
+    "root_cause_hypothesis": "The external verification command asserted that unified_strdate('not-a-date') should return None, but the assertion failed. The date parser leaves upload_date as None for invalid date strings, but the implementation converts None with compat_str, producing the string 'None' instead of returning None.",
+    "repair_action": "Guard the final compat_str(upload_date) conversion and return a value only when upload_date is not None."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison."
+}

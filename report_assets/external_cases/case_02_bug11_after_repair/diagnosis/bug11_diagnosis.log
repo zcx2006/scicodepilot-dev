@@ -1,0 +1,14 @@
+SciCodePilot External Repo Smoke
+- Mode: diagnosis
+- Workspace: D:\Git\My_Git_Project\BugsInPy_0616\external_experiments_0616\branch_results\cases002_003\outputs\bug11_diagnosis\workspace
+- Interpreter: python
+- Python version: Python 3.13.5
+- Before return code: 1
+- After return code: None
+- Error type: external_type_error
+- Patch applied: False
+- Final status: patch_failed
+- Evidence: int_str = re.sub(r'[,\.\+]', '', int_str)
+- FailureMemory: External TypeError triggered because a non-string input reached string/regex processing. str_to_int accepts an int input, but the implementation only handles None specially and then passes int_str into re.sub, which expects a string or bytes-like object.
+- summary.md: D:\Git\My_Git_Project\BugsInPy_0616\external_experiments_0616\branch_results\cases002_003\outputs\bug11_diagnosis\summary.md
+- summary.json: D:\Git\My_Git_Project\BugsInPy_0616\external_experiments_0616\branch_results\cases002_003\outputs\bug11_diagnosis\summary.json

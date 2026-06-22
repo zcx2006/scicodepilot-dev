@@ -1,0 +1,11 @@
+=== Bug 29 Python Environment ===
+
+Interpreter:
+D:\Git\My_Git_Project\BugsInPy_0616\venvs\case_003_bug29_py311\Scripts\python.exe
+
+Python version:
+Python 3.11.9
+
+pipes module check:
+<string>:1: DeprecationWarning: 'pipes' is deprecated and slated for removal in Python 3.13
+pipes import OK

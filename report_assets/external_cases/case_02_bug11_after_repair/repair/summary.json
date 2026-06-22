@@ -1,0 +1,117 @@
+{
+  "mode": "repair",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\BugsInPy_Workdir\\case_002_bug11\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\scicodepilot-case002-003\\outputs\\external_smoke\\20260616_090617",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\scicodepilot-case002-003\\outputs\\external_smoke\\20260616_090617\\workspace",
+  "workspace_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\scicodepilot-case002-003\\outputs\\external_smoke\\20260616_090617\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "interpreter": "python",
+  "python_executable": "python",
+  "python_version": "Python 3.13.5",
+  "before_return_code": 1,
+  "after_return_code": 0,
+  "detected_failure_type": "external_type_error",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": true,
+  "patch_plan_generated": true,
+  "patch_applied": true,
+  "patch_diff": "--- youtube_dl/utils.py\n+++ youtube_dl/utils.py\n@@ -3519,8 +3519,8 @@\n \n def str_to_int(int_str):\n     \"\"\" A more relaxed version of int_or_none \"\"\"\n-    if int_str is None:\n-        return None\n+    if not isinstance(int_str, compat_str):\n+        return int_str\n     int_str = re.sub(r'[,\\.\\+]', '', int_str)\n     return int(int_str)\n ",
+  "final_status": "patch_success",
+  "command": {
+    "command": "python -c \"from youtube_dl.utils import str_to_int; print(str_to_int(123))\"",
+    "interpreter": "python",
+    "python_executable": "python",
+    "python_version": "Python 3.13.5",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from youtube_dl.utils import str_to_int; print(str_to_int(123))\n                                                   ~~~~~~~~~~^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616\\scicodepilot-case002-003\\outputs\\external_smoke\\20260616_090617\\workspace\\youtube_dl\\utils.py\", line 3524, in str_to_int\n    int_str = re.sub(r'[,\\.\\+]', '', int_str)\n  File \"C:\\Users\\Liu\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\re\\__init__.py\", line 208, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: expected string or bytes-like object, got 'int'\n"
+  },
+  "before_command": {
+    "command": "python -c \"from youtube_dl.utils import str_to_int; print(str_to_int(123))\"",
+    "interpreter": "python",
+    "python_executable": "python",
+    "python_version": "Python 3.13.5",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from youtube_dl.utils import str_to_int; print(str_to_int(123))\n                                                   ~~~~~~~~~~^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616\\scicodepilot-case002-003\\outputs\\external_smoke\\20260616_090617\\workspace\\youtube_dl\\utils.py\", line 3524, in str_to_int\n    int_str = re.sub(r'[,\\.\\+]', '', int_str)\n  File \"C:\\Users\\Liu\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\re\\__init__.py\", line 208, in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: expected string or bytes-like object, got 'int'\n"
+  },
+  "after_command": {
+    "command": "python -c \"from youtube_dl.utils import str_to_int; print(str_to_int(123))\"",
+    "interpreter": "python",
+    "python_executable": "python",
+    "python_version": "Python 3.13.5",
+    "return_code": 0,
+    "success": true,
+    "stdout": "None\n",
+    "stderr": ""
+  },
+  "parsed_error": {
+    "error_type": "external_type_error",
+    "summary": "External TypeError triggered while running the user-provided command.",
+    "evidence": [
+      "int_str = re.sub(r'[,\\.\\+]', '', int_str)",
+      "TypeError: expected string or bytes-like object, got 'int'"
+    ],
+    "exception_type": "TypeError",
+    "file_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\scicodepilot-case002-003\\outputs\\external_smoke\\20260616_090617\\workspace\\youtube_dl\\utils.py",
+    "line_number": 3524,
+    "function_name": "str_to_int",
+    "assertion_expr": null,
+    "assertion_location": null,
+    "target_symbol": null,
+    "expected_value": null,
+    "error_message": "expected string or bytes-like object, got 'int'",
+    "failing_expression": "int_str = re.sub(r'[,\\.\\+]', '', int_str)",
+    "interpreter": null,
+    "command": "python -c \"from youtube_dl.utils import str_to_int; print(str_to_int(123))\"",
+    "stderr_evidence": [
+      "int_str = re.sub(r'[,\\.\\+]', '', int_str)",
+      "TypeError: expected string or bytes-like object, got 'int'"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "external_type_error",
+    "evidence": [
+      "int_str = re.sub(r'[,\\.\\+]', '', int_str)",
+      "TypeError: expected string or bytes-like object, got 'int'"
+    ],
+    "root_cause_hypothesis": "External TypeError triggered because a non-string input reached string/regex processing. str_to_int accepts an int input, but the implementation only handles None specially and then passes int_str into re.sub, which expects a string or bytes-like object.",
+    "repair_action": "Guard non-string inputs before regex normalization. If the input is not compat_str, return it unchanged."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison.",
+  "repair_plan": {
+    "plan_type": "PatchPlan",
+    "patch_plan": {
+      "task_id": "external_repo_smoke",
+      "error_type": "external_type_error",
+      "target_file": "youtube_dl/utils.py",
+      "suspected_line": 3522,
+      "rationale": "The parsed failure is an external TypeError from regex/string processing. str_to_int contains a None-only guard followed by re.sub(..., int_str), so non-string inputs can reach re.sub and trigger 'expected string or bytes-like object'.",
+      "proposed_change": "Replace the None-only guard with a compat_str type guard so non-string inputs are returned unchanged before regex normalization.",
+      "unified_diff": "--- youtube_dl/utils.py\n+++ youtube_dl/utils.py\n@@ -3519,8 +3519,8 @@\n \n def str_to_int(int_str):\n     \"\"\" A more relaxed version of int_or_none \"\"\"\n-    if int_str is None:\n-        return None\n+    if not isinstance(int_str, compat_str):\n+        return int_str\n     int_str = re.sub(r'[,\\.\\+]', '', int_str)\n     return int(int_str)\n ",
+      "confidence": 0.84,
+      "safety_notes": [
+        "Pattern matched only str_to_int with an exact None-only guard.",
+        "Patch requires a later re.sub(..., int_str) call in the same function.",
+        "Patch is limited to the isolated workspace target file."
+      ]
+    },
+    "patch_review": {
+      "task_id": "external_repo_smoke",
+      "error_type": "external_type_error",
+      "target_file": "youtube_dl/utils.py",
+      "approved": true,
+      "blocked": false,
+      "risk_level": "low",
+      "reasons": [
+        "No blocking safety risks detected."
+      ],
+      "warnings": [],
+      "reviewer": "rule_based_patch_safety_reviewer"
+    },
+    "note": "Patch was reviewed, approved, and applied only inside the isolated workspace."
+  }
+}

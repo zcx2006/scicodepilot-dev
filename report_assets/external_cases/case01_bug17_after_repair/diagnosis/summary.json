@@ -1,0 +1,61 @@
+{
+  "mode": "diagnosis",
+  "repo_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\BugsInPy_Workdir\\case_001_bug17\\youtube-dl",
+  "output_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis",
+  "workspace_dir": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace",
+  "workspace_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace",
+  "copy_workspace": true,
+  "original_repo_mutated": false,
+  "before_return_code": 1,
+  "after_return_code": null,
+  "detected_failure_type": "external_assertion_failure",
+  "failure_memory_generated": true,
+  "failure_memory_specialized": true,
+  "patch_plan_generated": false,
+  "patch_applied": false,
+  "patch_diff": "",
+  "final_status": "patch_failed",
+  "command": {
+    "command": "python -c \"from youtube_dl.utils import cli_bool_option; print(cli_bool_option({}, '--no-check-certificate', 'nocheckcertificate'))\"",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\extractor\\megaphone.py:21: SyntaxWarning: invalid escape sequence '\\.'\n  'thumbnail': 're:^https://.*\\.png.*$',\nD:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\extractor\\pandatv.py:39: SyntaxWarning: \"is not\" with 'int' literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from youtube_dl.utils import cli_bool_option; print(cli_bool_option({}, '--no-check-certificate', 'nocheckcertificate'))\n                                                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\utils.py\", line 2736, in cli_bool_option\n    assert isinstance(param, bool)\n           ~~~~~~~~~~^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "before_command": {
+    "command": "python -c \"from youtube_dl.utils import cli_bool_option; print(cli_bool_option({}, '--no-check-certificate', 'nocheckcertificate'))\"",
+    "return_code": 1,
+    "success": false,
+    "stdout": "",
+    "stderr": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\extractor\\megaphone.py:21: SyntaxWarning: invalid escape sequence '\\.'\n  'thumbnail': 're:^https://.*\\.png.*$',\nD:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\extractor\\pandatv.py:39: SyntaxWarning: \"is not\" with 'int' literal. Did you mean \"!=\"?\n  if error_code is not 0:\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from youtube_dl.utils import cli_bool_option; print(cli_bool_option({}, '--no-check-certificate', 'nocheckcertificate'))\n                                                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\utils.py\", line 2736, in cli_bool_option\n    assert isinstance(param, bool)\n           ~~~~~~~~~~^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "after_command": null,
+  "parsed_error": {
+    "error_type": "external_assertion_failure",
+    "summary": "External AssertionError triggered while running the user-provided command.",
+    "evidence": [
+      "assert isinstance(param, bool)",
+      "AssertionError"
+    ],
+    "exception_type": "AssertionError",
+    "file_path": "D:\\Git\\My_Git_Project\\BugsInPy_0616\\external_experiments_0616\\branch_results\\case001\\outputs\\bug17_diagnosis\\workspace\\youtube_dl\\utils.py",
+    "line_number": 2736,
+    "function_name": "cli_bool_option",
+    "assertion_expr": "assert isinstance(param, bool)",
+    "command": "python -c \"from youtube_dl.utils import cli_bool_option; print(cli_bool_option({}, '--no-check-certificate', 'nocheckcertificate'))\"",
+    "stderr_evidence": [
+      "assert isinstance(param, bool)",
+      "AssertionError"
+    ]
+  },
+  "failure_memory": {
+    "error_type": "external_assertion_failure",
+    "evidence": [
+      "assert isinstance(param, bool)",
+      "AssertionError"
+    ],
+    "root_cause_hypothesis": "External AssertionError triggered while running the user-provided command. The command reached an assert statement in application code. When the assertion checks that a value is bool, the observed control path can produce None if a requested configuration key is absent.",
+    "repair_action": "Inspect the assignment immediately before the assertion. If a dict .get(...) call can return None and the surrounding function should emit no CLI arguments for missing options, add a conservative None guard before the bool assertion."
+  },
+  "scope_note": "External repo smoke interface only; not a public benchmark result and not a SOTA comparison."
+}
